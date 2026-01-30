@@ -19,14 +19,11 @@ use tauri::{
 pub fn run() {
     env_logger::init();
 
-    let app_state = AppState::new().expect("Failed to initialize app state");
-
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_clipboard_manager::init())
-        .manage(app_state)
         .invoke_handler(tauri::generate_handler![
             commands::list_audio_devices,
             commands::get_settings,
@@ -41,6 +38,16 @@ pub fn run() {
             commands::get_recording_status,
         ])
         .setup(|app| {
+            // Initialiser l'état avec le moteur OpenVINO
+            let app_state = match AppState::new(app.handle()) {
+                Ok(state) => state,
+                Err(e) => {
+                    log::error!("Failed to initialize app state: {}", e);
+                    return Err(e.into());
+                }
+            };
+
+            app.manage(app_state);
             // Create tray menu
             let quit_item = MenuItem::with_id(app, "quit", "Quitter WakaScribe", true, None::<&str>)?;
             let show_item = MenuItem::with_id(app, "show", "Afficher", true, None::<&str>)?;

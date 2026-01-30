@@ -1,9 +1,9 @@
 use tauri::State;
+use crate::engines::SpeechEngine;
 use crate::state::AppState;
 use crate::storage::history;
 use crate::types::TranscriptionResult;
 use crate::audio::AudioCapture;
-use std::time::Instant;
 use std::cell::RefCell;
 
 // Thread-local audio capture to avoid Send+Sync requirements on cpal::Stream
@@ -50,8 +50,6 @@ pub fn stop_recording(state: State<'_, AppState>) -> Result<TranscriptionResult,
         return Err("Not recording".to_string());
     }
 
-    let start = Instant::now();
-
     // Stop capture and get audio data from thread-local storage
     let (audio_buffer, sample_rate) = AUDIO_CAPTURE.with(|cell| -> Result<(Vec<f32>, u32), String> {
         let mut capture_opt = cell.borrow_mut();
@@ -72,15 +70,8 @@ pub fn stop_recording(state: State<'_, AppState>) -> Result<TranscriptionResult,
         return Err("Recording too short (minimum 0.5 seconds)".to_string());
     }
 
-    // TODO: Intégrer le vrai moteur STT ici
-    let result = TranscriptionResult {
-        text: format!("[Mock] Audio capturé: {:.1}s à {}Hz", duration_seconds, sample_rate),
-        confidence: 0.95,
-        duration_seconds,
-        processing_time_ms: start.elapsed().as_millis() as u64,
-        detected_language: Some("fr".to_string()),
-        timestamp: chrono::Utc::now().timestamp(),
-    };
+    // Utiliser le moteur OpenVINO pour la transcription
+    let result = state.engine.transcribe(&audio_buffer, sample_rate)?;
 
     history::add_transcription(result.clone())?;
 

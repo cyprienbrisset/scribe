@@ -1,4 +1,7 @@
 use std::sync::{Arc, RwLock};
+use tauri::{AppHandle, Manager};
+
+use crate::engines::OpenVINOEngine;
 use crate::storage::config;
 use crate::types::AppSettings;
 
@@ -9,16 +12,29 @@ pub struct AppState {
     pub is_recording: Arc<RwLock<bool>>,
     pub settings: Arc<RwLock<AppSettings>>,
     pub sample_rate: Arc<RwLock<u32>>,
+    pub engine: Arc<OpenVINOEngine>,
 }
 
 impl AppState {
-    pub fn new() -> Result<Self, String> {
+    pub fn new(app_handle: &AppHandle) -> Result<Self, String> {
         let settings = config::load_settings();
+
+        // Obtenir le chemin des ressources
+        let resource_path = app_handle.path()
+            .resource_dir()
+            .map_err(|e| format!("Failed to get resource dir: {}", e))?;
+
+        log::info!("Resource path: {:?}", resource_path);
+
+        // Initialiser le moteur OpenVINO
+        let engine = OpenVINOEngine::new(&resource_path, &settings.transcription_language)
+            .map_err(|e| format!("Failed to initialize OpenVINO engine: {}", e))?;
 
         Ok(Self {
             is_recording: Arc::new(RwLock::new(false)),
             settings: Arc::new(RwLock::new(settings)),
-            sample_rate: Arc::new(RwLock::new(44100)),
+            sample_rate: Arc::new(RwLock::new(16000)),
+            engine: Arc::new(engine),
         })
     }
 }
