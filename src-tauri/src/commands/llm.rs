@@ -19,6 +19,11 @@ pub fn set_groq_api_key(key: String) -> Result<(), String> {
 /// Récupère la clé API Groq depuis le keyring (pour validation interne)
 #[tauri::command]
 pub fn get_groq_api_key() -> Option<String> {
+    get_groq_api_key_internal()
+}
+
+/// Récupère la clé API Groq depuis le keyring (usage interne sans attribut tauri::command)
+pub fn get_groq_api_key_internal() -> Option<String> {
     let entry = Entry::new(SERVICE_NAME, ACCOUNT_NAME).ok()?;
     entry.get_password().ok()
 }
