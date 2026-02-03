@@ -13,8 +13,8 @@ interface StatusInfo {
 }
 
 // Dimensions de la fenêtre
-const COMPACT_SIZE = { width: 300, height: 40 };
-const EXTENDED_SIZE = { width: 400, height: 150 };
+const COMPACT_SIZE = { width: 320, height: 60 };
+const EXTENDED_SIZE = { width: 400, height: 180 };
 
 export default function FloatingWindow() {
   const [status, setStatus] = useState<RecordingStatus>("idle");
@@ -24,34 +24,16 @@ export default function FloatingWindow() {
     llmEnabled: false,
     duration: 0,
   });
-  const [isDragging, setIsDragging] = useState(false);
-  const dragOffset = useRef({ x: 0, y: 0 });
   const durationInterval = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Gestion du drag & drop pour déplacer la fenêtre
+  // Gestion du drag avec l'API native Tauri
   const handleMouseDown = async (e: React.MouseEvent) => {
+    // Ne pas drag si on clique sur un bouton
     if ((e.target as HTMLElement).closest("button")) return;
 
-    setIsDragging(true);
+    // Utiliser l'API native de Tauri pour le drag
     const window = getCurrentWindow();
-    const pos = await window.outerPosition();
-    dragOffset.current = {
-      x: e.screenX - pos.x,
-      y: e.screenY - pos.y,
-    };
-  };
-
-  const handleMouseMove = async (e: React.MouseEvent) => {
-    if (!isDragging) return;
-
-    const newX = e.screenX - dragOffset.current.x;
-    const newY = e.screenY - dragOffset.current.y;
-
-    await invoke("set_floating_window_position", { x: newX, y: newY });
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
+    await window.startDragging();
   };
 
   // Redimensionner la fenêtre selon le statut
@@ -152,9 +134,6 @@ export default function FloatingWindow() {
     <div
       className="floating-window"
       onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
     >
       {/* Barre de titre compacte */}
       <div className="floating-header">

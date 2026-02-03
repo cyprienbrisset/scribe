@@ -21,13 +21,15 @@
         "label": "floating",
         "title": "WakaScribe",
         "url": "/floating.html",
-        "width": 300,
-        "height": 40,
+        "width": 320,
+        "height": 60,
+        "minWidth": 280,
+        "minHeight": 50,
         "decorations": false,
         "alwaysOnTop": true,
         "transparent": true,
         "visible": false,
-        "resizable": false,
+        "resizable": true,
         "skipTaskbar": true
       }
     ],

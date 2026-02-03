@@ -641,24 +641,29 @@ body {
 .floating-window {
   background: rgba(18, 18, 20, 0.95);
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
-  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  backdrop-filter: blur(12px);
   overflow: hidden;
-  cursor: move;
+  cursor: grab;
   user-select: none;
   height: 100%;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.floating-window:active {
+  cursor: grabbing;
 }
 
 .floating-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 12px;
+  padding: 10px 14px;
   background: var(--bg-panel);
   border-bottom: 1px solid var(--border-subtle);
-  min-height: 40px;
+  min-height: 48px;
 }
 
 .floating-status {
@@ -668,11 +673,12 @@ body {
 }
 
 .status-led {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   background: var(--text-muted);
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .status-led.idle {
@@ -693,11 +699,11 @@ body {
 }
 
 .status-label {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--text-secondary);
+  letter-spacing: 0.08em;
+  color: var(--text-primary);
 }
 
 .floating-controls {
@@ -706,12 +712,14 @@ body {
 }
 
 .control-btn {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   border: none;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
   color: var(--text-muted);
   font-size: 14px;
+  font-weight: 600;
   font-weight: 600;
   cursor: pointer;
   border-radius: 4px;
