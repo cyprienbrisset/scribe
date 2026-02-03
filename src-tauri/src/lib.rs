@@ -682,7 +682,7 @@ fn start_streaming_transcription(app: &tauri::AppHandle) {
     }
 
     // Intervalle entre les transcriptions (en millisecondes)
-    const STREAMING_INTERVAL_MS: u64 = 2500;
+    const STREAMING_INTERVAL_MS: u64 = 1000;
     let mut last_text_len = 0;
 
     // Boucle de streaming tant que l'enregistrement est actif
@@ -794,62 +794,105 @@ fn start_streaming_transcription(app: &tauri::AppHandle) {
     println!("[STREAMING] Streaming transcription ended");
 }
 
-/// Tape du texte caractère par caractère (pour le streaming)
+/// Tape du texte en utilisant le presse-papier (pour le streaming)
 fn type_text_incremental(text: &str) {
+    use std::io::Write;
+
     #[cfg(target_os = "macos")]
     {
-        // Échapper le texte pour AppleScript
-        let escaped = text
-            .replace("\\", "\\\\")
-            .replace("\"", "\\\"")
-            .replace("\n", "\\n");
+        // Copier dans le presse-papier via pbcopy
+        match Command::new("pbcopy")
+            .stdin(Stdio::piped())
+            .spawn()
+        {
+            Ok(mut child) => {
+                if let Some(mut stdin) = child.stdin.take() {
+                    let _ = stdin.write_all(text.as_bytes());
+                }
+                let _ = child.wait();
+            }
+            Err(_) => return,
+        }
 
-        let script = format!(
-            r#"tell application "System Events" to keystroke "{}""#,
-            escaped
-        );
+        // Petit délai pour s'assurer que le presse-papier est mis à jour
+        std::thread::sleep(std::time::Duration::from_millis(30));
 
+        // Simuler Cmd+V avec AppleScript
+        let script = r#"tell application "System Events" to keystroke "v" using command down"#;
         let _ = Command::new("osascript")
-            .args(["-e", &script])
+            .args(["-e", script])
             .output();
     }
 
     #[cfg(target_os = "windows")]
     {
-        // Sur Windows, utiliser SendInput pour chaque caractère
-        // Pour simplifier, on utilise la même approche que paste_text
-        // mais avec un délai entre les caractères
-        use std::io::Write;
+        // Copier dans le presse-papier via clip.exe
         match Command::new("cmd")
-            .args(["/C", &format!("echo|set /p=\"{}\"| clip", text)])
-            .output()
+            .args(["/C", "clip"])
+            .stdin(Stdio::piped())
+            .spawn()
         {
-            Ok(_) => {
-                std::thread::sleep(std::time::Duration::from_millis(50));
-                // Simuler Ctrl+V pour coller
-                use windows::Win32::UI::Input::KeyboardAndMouse::{
-                    SendInput, INPUT, INPUT_0, INPUT_KEYBOARD, KEYBDINPUT, KEYBD_EVENT_FLAGS,
-                    KEYEVENTF_KEYUP, VK_CONTROL, VK_V,
-                };
-                let inputs: [INPUT; 4] = [
-                    INPUT { r#type: INPUT_KEYBOARD, Anonymous: INPUT_0 { ki: KEYBDINPUT { wVk: VK_CONTROL, wScan: 0, dwFlags: KEYBD_EVENT_FLAGS(0), time: 0, dwExtraInfo: 0 } } },
-                    INPUT { r#type: INPUT_KEYBOARD, Anonymous: INPUT_0 { ki: KEYBDINPUT { wVk: VK_V, wScan: 0, dwFlags: KEYBD_EVENT_FLAGS(0), time: 0, dwExtraInfo: 0 } } },
-                    INPUT { r#type: INPUT_KEYBOARD, Anonymous: INPUT_0 { ki: KEYBDINPUT { wVk: VK_V, wScan: 0, dwFlags: KEYEVENTF_KEYUP, time: 0, dwExtraInfo: 0 } } },
-                    INPUT { r#type: INPUT_KEYBOARD, Anonymous: INPUT_0 { ki: KEYBDINPUT { wVk: VK_CONTROL, wScan: 0, dwFlags: KEYEVENTF_KEYUP, time: 0, dwExtraInfo: 0 } } },
-                ];
-                unsafe { SendInput(&inputs, std::mem::size_of::<INPUT>() as i32) };
+            Ok(mut child) => {
+                if let Some(mut stdin) = child.stdin.take() {
+                    let _ = stdin.write_all(text.as_bytes());
+                }
+                let _ = child.wait();
             }
-            Err(_) => {}
+            Err(_) => return,
         }
+
+        std::thread::sleep(std::time::Duration::from_millis(30));
+
+        // Simuler Ctrl+V
+        use windows::Win32::UI::Input::KeyboardAndMouse::{
+            SendInput, INPUT, INPUT_0, INPUT_KEYBOARD, KEYBDINPUT, KEYBD_EVENT_FLAGS,
+            KEYEVENTF_KEYUP, VK_CONTROL, VK_V,
+        };
+        let inputs: [INPUT; 4] = [
+            INPUT { r#type: INPUT_KEYBOARD, Anonymous: INPUT_0 { ki: KEYBDINPUT { wVk: VK_CONTROL, wScan: 0, dwFlags: KEYBD_EVENT_FLAGS(0), time: 0, dwExtraInfo: 0 } } },
+            INPUT { r#type: INPUT_KEYBOARD, Anonymous: INPUT_0 { ki: KEYBDINPUT { wVk: VK_V, wScan: 0, dwFlags: KEYBD_EVENT_FLAGS(0), time: 0, dwExtraInfo: 0 } } },
+            INPUT { r#type: INPUT_KEYBOARD, Anonymous: INPUT_0 { ki: KEYBDINPUT { wVk: VK_V, wScan: 0, dwFlags: KEYEVENTF_KEYUP, time: 0, dwExtraInfo: 0 } } },
+            INPUT { r#type: INPUT_KEYBOARD, Anonymous: INPUT_0 { ki: KEYBDINPUT { wVk: VK_CONTROL, wScan: 0, dwFlags: KEYEVENTF_KEYUP, time: 0, dwExtraInfo: 0 } } },
+        ];
+        unsafe { SendInput(&inputs, std::mem::size_of::<INPUT>() as i32) };
     }
 
     #[cfg(target_os = "linux")]
     {
         let wayland = std::env::var("WAYLAND_DISPLAY").is_ok();
         if wayland {
-            let _ = Command::new("wtype").arg(text).output();
+            // Copier avec wl-copy
+            match Command::new("wl-copy")
+                .stdin(Stdio::piped())
+                .spawn()
+            {
+                Ok(mut child) => {
+                    if let Some(mut stdin) = child.stdin.take() {
+                        let _ = stdin.write_all(text.as_bytes());
+                    }
+                    let _ = child.wait();
+                }
+                Err(_) => return,
+            }
+            std::thread::sleep(std::time::Duration::from_millis(30));
+            let _ = Command::new("wtype").args(["-M", "ctrl", "v", "-m", "ctrl"]).output();
         } else {
-            let _ = Command::new("xdotool").args(["type", "--", text]).output();
+            // Copier avec xclip
+            match Command::new("xclip")
+                .args(["-selection", "clipboard"])
+                .stdin(Stdio::piped())
+                .spawn()
+            {
+                Ok(mut child) => {
+                    if let Some(mut stdin) = child.stdin.take() {
+                        let _ = stdin.write_all(text.as_bytes());
+                    }
+                    let _ = child.wait();
+                }
+                Err(_) => return,
+            }
+            std::thread::sleep(std::time::Duration::from_millis(30));
+            let _ = Command::new("xdotool").args(["key", "--clearmodifiers", "ctrl+v"]).output();
         }
     }
 }
