@@ -1,6 +1,7 @@
 mod audio;
 mod commands;
 mod engines;
+mod llm;
 mod state;
 mod storage;
 mod types;
