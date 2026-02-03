@@ -2,7 +2,7 @@
 
 ## Vue d'ensemble du projet
 
-WakaScribe est une application de dictée vocale cross-platform (macOS/Windows) fonctionnant en mode local sans connexion Internet. Elle utilise le moteur NVIDIA Parakeet v3 avec optimisations matérielles.
+WakaScribe est une application de dictée vocale cross-platform (macOS/Windows) fonctionnant en mode local sans connexion Internet. Elle utilise Whisper.cpp pour la reconnaissance vocale.
 
 **Propriétaire:** Cyprien BRISSET
 **Distribution:** Freeware gratuit (Site WakaStellar, App Store, Microsoft Store)
@@ -12,7 +12,7 @@ WakaScribe est une application de dictée vocale cross-platform (macOS/Windows) 
 ```
 Frontend: React 18 + TypeScript + TailwindCSS + Zustand
 Backend:  Rust/Tauri 2.x + cpal + reqwest + keyring
-Moteurs:  Parakeet MLX (Apple) | OpenVINO (Intel) | TensorRT (NVIDIA)
+Moteurs:  Whisper.cpp via whisper-rs
 ```
 
 ## Structure du projet
@@ -27,11 +27,11 @@ wakascribe/
 │   │   │   ├── audio.rs
 │   │   │   ├── auth.rs
 │   │   │   └── settings.rs
-│   │   ├── engines/                   # Moteurs STT
-│   │   │   ├── selector.rs
-│   │   │   ├── mlx.rs
-│   │   │   ├── openvino.rs
-│   │   │   └── tensorrt.rs
+│   │   ├── engines/                   # Moteur STT
+│   │   │   ├── whisper.rs
+│   │   │   ├── model_manager.rs
+│   │   │   ├── traits.rs
+│   │   │   └── error.rs
 │   │   ├── audio/                     # Capture audio
 │   │   │   ├── capture.rs
 │   │   │   ├── buffer.rs
@@ -83,16 +83,19 @@ npm run lint
 cargo clippy
 ```
 
-## Architecture des moteurs STT
+## Architecture du moteur STT
 
-La sélection du moteur se fait automatiquement selon le matériel :
+WakaScribe utilise Whisper.cpp via les bindings whisper-rs pour la reconnaissance vocale:
 
-| Architecture    | Framework  | Modèle                      |
-|----------------|------------|-----------------------------|
-| Apple Silicon  | MLX        | parakeet-mlx                |
-| Intel 11e+     | OpenVINO   | parakeet-tdt-0.6b-v3-ov     |
-| NVIDIA RTX     | TensorRT   | NIM Container               |
-| Fallback       | ONNX       | parakeet-onnx               |
+| Modèle   | Taille   | Qualité    | Disponibilité  |
+|----------|----------|------------|----------------|
+| Tiny     | 75 MB    | Basique    | Bundlé         |
+| Small    | 466 MB   | Bonne      | Téléchargeable |
+| Medium   | 1.5 GB   | Très bonne | Téléchargeable |
+
+- **Tiny** est inclus dans l'application par défaut
+- Les modèles Small et Medium peuvent être téléchargés depuis les paramètres
+- Support de 99 langues avec détection automatique
 
 ## Conventions de code
 
@@ -138,10 +141,9 @@ Endpoints principaux :
 
 ## Ressources externes
 
-- **Modèles:** senstella/parakeet-mlx, FluidInference/parakeet-tdt-0.6b-v3-ov
+- **Modèles:** ggerganov/whisper.cpp (Hugging Face)
 - **Docs Tauri:** https://v2.tauri.app
-- **Docs MLX:** https://ml-explore.github.io
-- **Docs OpenVINO:** https://docs.openvino.ai
+- **Docs Whisper.cpp:** https://github.com/ggerganov/whisper.cpp
 
 ## Points d'attention
 
