@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
+import { openUrl } from '@tauri-apps/plugin-opener';
 import { useSettingsStore } from '../stores/settingsStore';
 import { HotkeyInput } from './HotkeyInput';
 import { ModelSize, ModelInfo, DownloadProgress } from '../types';
@@ -16,6 +17,9 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   const [models, setModels] = useState<ModelInfo[]>([]);
   const [downloading, setDownloading] = useState<ModelSize | null>(null);
   const [downloadProgress, setDownloadProgress] = useState<DownloadProgress | null>(null);
+  const [apiKey, setApiKey] = useState('');
+  const [showApiKey, setShowApiKey] = useState(false);
+  const [apiKeyStatus, setApiKeyStatus] = useState<'valid' | 'invalid' | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -23,6 +27,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
       loadDevices();
       loadDictionary();
       loadModels();
+      checkApiKey();
     }
   }, [isOpen, loadSettings, loadDevices, loadDictionary]);
 
@@ -52,6 +57,36 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
     }
   };
 
+  const checkApiKey = async () => {
+    try {
+      const hasKey = await invoke<boolean>('has_groq_api_key');
+      if (hasKey) {
+        setApiKey('••••••••••••••••');
+        setApiKeyStatus('valid');
+      }
+    } catch (e) {
+      console.error('Failed to check API key:', e);
+    }
+  };
+
+  const handleSaveApiKey = async () => {
+    if (!apiKey || apiKey === '••••••••••••••••') return;
+
+    try {
+      const isValid = await invoke<boolean>('validate_groq_api_key', { key: apiKey });
+      if (isValid) {
+        await invoke('set_groq_api_key', { key: apiKey });
+        setApiKeyStatus('valid');
+        setApiKey('••••••••••••••••');
+      } else {
+        setApiKeyStatus('invalid');
+      }
+    } catch (e) {
+      console.error('Failed to save API key:', e);
+      setApiKeyStatus('invalid');
+    }
+  };
+
   const handleDownloadModel = async (size: ModelSize) => {
     setDownloading(size);
     setDownloadProgress({ downloaded: 0, total: 1, percent: 0 });
@@ -70,6 +105,20 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
       await loadSettings();
     } catch (e) {
       console.error('Switch failed:', e);
+    }
+  };
+
+  const handleDeleteModel = async (size: ModelSize) => {
+    if (size === 'tiny') return; // Ne jamais supprimer tiny (bundled)
+    if (settings?.whisper_model === size) {
+      // Si le modèle actif est supprimé, basculer sur tiny
+      await handleSwitchModel('tiny');
+    }
+    try {
+      await invoke('delete_model', { size });
+      await loadModels();
+    } catch (e) {
+      console.error('Delete failed:', e);
     }
   };
 
@@ -190,16 +239,31 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                       </span>
                     </div>
                   ) : model.available ? (
-                    settings.whisper_model === model.size ? (
-                      <span className="text-[0.6rem] text-[var(--accent-green)] uppercase">Actif</span>
-                    ) : (
-                      <button
-                        onClick={() => handleSwitchModel(model.size)}
-                        className="text-[0.6rem] text-[var(--accent-cyan)] hover:underline uppercase"
-                      >
-                        Utiliser
-                      </button>
-                    )
+                    <div className="flex items-center gap-2">
+                      {settings.whisper_model === model.size ? (
+                        <span className="text-[0.6rem] text-[var(--accent-green)] uppercase">Actif</span>
+                      ) : (
+                        <button
+                          onClick={() => handleSwitchModel(model.size)}
+                          className="text-[0.6rem] text-[var(--accent-cyan)] hover:underline uppercase"
+                        >
+                          Utiliser
+                        </button>
+                      )}
+                      {/* Bouton supprimer (sauf pour tiny qui est bundled) */}
+                      {model.size !== 'tiny' && (
+                        <button
+                          onClick={() => handleDeleteModel(model.size)}
+                          className="text-[0.6rem] text-[var(--text-muted)] hover:text-[var(--accent-red)] transition-colors"
+                          title="Supprimer ce modèle"
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
                   ) : (
                     <button
                       onClick={() => handleDownloadModel(model.size)}
@@ -215,6 +279,141 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                   )}
                 </div>
               ))}
+            </div>
+          </section>
+
+          {/* LLM Section */}
+          <section className="space-y-4">
+            <h3 className="text-[0.65rem] uppercase tracking-[0.2em] text-[var(--accent-cyan)] font-medium flex items-center gap-2">
+              <span className="w-8 h-px bg-[var(--accent-cyan)]/30" />
+              Intelligence (LLM)
+            </h3>
+
+            <div className="space-y-3">
+              {/* Toggle LLM */}
+              <label className="checkbox-field">
+                <input
+                  type="checkbox"
+                  checked={settings.llm_enabled}
+                  onChange={(e) => updateSettings({ llm_enabled: e.target.checked })}
+                />
+                <span className="checkmark" />
+                <span className="text-sm text-[var(--text-secondary)]">
+                  Activer le post-traitement LLM
+                </span>
+              </label>
+
+              {/* Cle API Groq (visible seulement si LLM active) */}
+              {settings.llm_enabled && (
+                <>
+                  <div>
+                    <label className="text-[0.7rem] uppercase tracking-wider text-[var(--text-muted)] mb-2 block">
+                      Cle API Groq
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type={showApiKey ? 'text' : 'password'}
+                        value={apiKey}
+                        onChange={(e) => setApiKey(e.target.value)}
+                        placeholder="gsk_..."
+                        className="input-field flex-1"
+                      />
+                      <button
+                        onClick={() => setShowApiKey(!showApiKey)}
+                        className="btn-panel px-3"
+                      >
+                        {showApiKey ? '🙈' : '👁'}
+                      </button>
+                      <button
+                        onClick={handleSaveApiKey}
+                        className="btn-panel px-3 text-[var(--accent-green)]"
+                      >
+                        ✓
+                      </button>
+                    </div>
+                    {apiKeyStatus && (
+                      <p className={`text-[0.6rem] mt-1 ${apiKeyStatus === 'valid' ? 'text-[var(--accent-green)]' : 'text-[var(--accent-red)]'}`}>
+                        {apiKeyStatus === 'valid' ? '✓ Cle valide' : '✗ Cle invalide'}
+                      </p>
+                    )}
+                    <a
+                      href="#"
+                      onClick={(e) => { e.preventDefault(); openUrl('https://console.groq.com/keys'); }}
+                      className="text-[0.6rem] text-[var(--accent-cyan)] hover:underline mt-1 inline-block"
+                    >
+                      Obtenir une cle gratuite →
+                    </a>
+                  </div>
+
+                  {/* Mode LLM */}
+                  <div>
+                    <label className="text-[0.7rem] uppercase tracking-wider text-[var(--text-muted)] mb-2 block">
+                      Mode de correction
+                    </label>
+                    <div className="space-y-2">
+                      {(['basic', 'smart', 'contextual'] as const).map((mode) => (
+                        <label key={mode} className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="llm_mode"
+                            checked={settings.llm_mode === mode}
+                            onChange={() => updateSettings({ llm_mode: mode })}
+                            className="accent-[var(--accent-cyan)]"
+                          />
+                          <span className="text-sm text-[var(--text-secondary)]">
+                            {mode === 'basic' && 'Basique - ponctuation et grammaire'}
+                            {mode === 'smart' && 'Intelligent - reformulation claire'}
+                            {mode === 'contextual' && 'Contextuel - adapte au mode de dictee'}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </section>
+
+          {/* Dictation Mode Section */}
+          <section className="space-y-4">
+            <h3 className="text-[0.65rem] uppercase tracking-[0.2em] text-[var(--accent-magenta)] font-medium flex items-center gap-2">
+              <span className="w-8 h-px bg-[var(--accent-magenta)]/30" />
+              Mode de dictee
+            </h3>
+
+            <div className="space-y-3">
+              {/* Tabs mode dictee */}
+              <div className="flex gap-1">
+                {(['general', 'email', 'code', 'notes'] as const).map((mode) => (
+                  <button
+                    key={mode}
+                    onClick={() => updateSettings({ dictation_mode: mode })}
+                    className={`px-3 py-1.5 text-[0.65rem] uppercase tracking-wider border transition-colors ${
+                      settings.dictation_mode === mode
+                        ? 'border-[var(--accent-magenta)] text-[var(--accent-magenta)] bg-[var(--accent-magenta)]/10'
+                        : 'border-[var(--border-subtle)] text-[var(--text-muted)] hover:border-[var(--accent-magenta)]/50'
+                    }`}
+                  >
+                    {mode === 'general' && 'General'}
+                    {mode === 'email' && 'Email'}
+                    {mode === 'code' && 'Code'}
+                    {mode === 'notes' && 'Notes'}
+                  </button>
+                ))}
+              </div>
+
+              {/* Toggle commandes vocales */}
+              <label className="checkbox-field">
+                <input
+                  type="checkbox"
+                  checked={settings.voice_commands_enabled}
+                  onChange={(e) => updateSettings({ voice_commands_enabled: e.target.checked })}
+                />
+                <span className="checkmark" />
+                <span className="text-sm text-[var(--text-secondary)]">
+                  Commandes vocales activees
+                </span>
+              </label>
             </div>
           </section>
 

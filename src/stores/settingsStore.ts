@@ -27,6 +27,10 @@ const defaultSettings: AppSettings = {
   auto_copy_to_clipboard: true,
   notification_on_complete: true,
   whisper_model: 'tiny',
+  llm_enabled: false,
+  llm_mode: 'basic',
+  voice_commands_enabled: false,
+  dictation_mode: 'general',
 };
 
 export const useSettingsStore = create<SettingsStore>((set, get) => ({
