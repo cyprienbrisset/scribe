@@ -1,4 +1,3 @@
-import { Mic, MicOff, Loader2 } from 'lucide-react';
 import { writeText } from '@tauri-apps/plugin-clipboard-manager';
 import { useTranscriptionStore } from '../stores/transcriptionStore';
 import { useSettingsStore } from '../stores/settingsStore';
@@ -22,73 +21,164 @@ export function DictationPanel() {
     }
   };
 
-  const getButtonClasses = () => {
-    const base = 'w-32 h-32 rounded-full flex items-center justify-center shadow-xl transition-all duration-200';
-    switch (status) {
-      case 'recording':
-        return `${base} bg-red-500 hover:bg-red-600 animate-pulse`;
-      case 'processing':
-        return `${base} bg-gray-400 cursor-not-allowed`;
-      default:
-        return `${base} bg-blue-500 hover:bg-blue-600 hover:scale-105`;
-    }
-  };
-
   const getStatusText = () => {
     switch (status) {
       case 'recording':
-        return 'Enregistrement en cours...';
+        return 'CAPTURE EN COURS';
       case 'processing':
-        return 'Transcription...';
+        return 'ANALYSE NEURALE';
       case 'completed':
-        return 'Transcription terminée';
+        return 'TRANSCRIPTION TERMINÉE';
       case 'error':
-        return 'Erreur';
+        return 'ERREUR SYSTÈME';
       default:
-        return 'Cliquez pour dicter';
+        return 'PRÊT À CAPTURER';
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-8 space-y-8">
-      <button
-        onClick={handleToggle}
-        disabled={status === 'processing'}
-        className={getButtonClasses()}
-        aria-label={status === 'recording' ? 'Arrêter' : 'Démarrer'}
-      >
-        {status === 'processing' ? (
-          <Loader2 className="w-16 h-16 text-white animate-spin" />
-        ) : status === 'recording' ? (
-          <MicOff className="w-16 h-16 text-white" />
-        ) : (
-          <Mic className="w-16 h-16 text-white" />
+    <div className="h-full flex flex-col items-center justify-center p-8 gap-8">
+      {/* Main record button */}
+      <div className="relative">
+        {/* Outer ring animation for recording */}
+        {status === 'recording' && (
+          <>
+            <div className="absolute inset-0 rounded-full border-2 border-[var(--accent-red)] animate-ping opacity-30"
+                 style={{ transform: 'scale(1.3)' }} />
+            <div className="absolute inset-0 rounded-full border border-[var(--accent-red)] animate-pulse opacity-50"
+                 style={{ transform: 'scale(1.15)' }} />
+          </>
         )}
-      </button>
 
-      <p className="text-lg text-gray-600 dark:text-gray-300">{getStatusText()}</p>
+        <button
+          onClick={handleToggle}
+          disabled={status === 'processing'}
+          className={`record-btn relative w-32 h-32 rounded-full flex items-center justify-center transition-all duration-300 ${
+            status === 'recording' ? 'recording' : ''
+          } ${status === 'processing' ? 'opacity-50 cursor-not-allowed' : ''}`}
+          aria-label={status === 'recording' ? 'Arrêter' : 'Démarrer'}
+        >
+          {/* Inner content */}
+          <div className="relative z-10">
+            {status === 'processing' ? (
+              <svg className="w-12 h-12 text-[var(--accent-cyan)] animate-spin" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeDasharray="31.416" strokeDashoffset="10" />
+              </svg>
+            ) : status === 'recording' ? (
+              <div className="w-8 h-8 bg-[var(--accent-red)] rounded-sm" />
+            ) : (
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-[var(--accent-cyan)]">
+                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                <line x1="12" x2="12" y1="19" y2="22" />
+              </svg>
+            )}
+          </div>
+        </button>
+      </div>
 
+      {/* Status display */}
+      <div className="text-center space-y-2">
+        <div className="flex items-center justify-center gap-2">
+          <div className={`led ${status === 'recording' ? 'recording' : status === 'processing' ? 'processing' : 'active'}`} />
+          <span className="text-[0.7rem] uppercase tracking-[0.2em] text-[var(--text-secondary)] font-medium">
+            {getStatusText()}
+          </span>
+        </div>
+
+        {/* Waveform visualization placeholder */}
+        {status === 'recording' && (
+          <div className="flex items-center justify-center gap-[2px] h-8">
+            {[...Array(20)].map((_, i) => (
+              <div
+                key={i}
+                className="w-[3px] bg-[var(--accent-cyan)] rounded-full waveform-bar"
+                style={{
+                  animationDelay: `${i * 50}ms`,
+                  height: '100%'
+                }}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Error display */}
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded max-w-md">
-          <p>{error}</p>
-          <button onClick={clearError} className="text-sm underline mt-2">
-            Fermer
-          </button>
+        <div className="panel border-[var(--accent-red)] bg-[var(--accent-red)]/10 p-4 max-w-md">
+          <div className="flex items-start gap-3">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-red)" strokeWidth="2" className="flex-shrink-0 mt-0.5">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <div className="flex-1">
+              <p className="text-[var(--text-primary)] text-sm">{error}</p>
+              <button
+                onClick={clearError}
+                className="text-[0.65rem] uppercase tracking-wider text-[var(--accent-red)] hover:underline mt-2"
+              >
+                Fermer
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
+      {/* Result card */}
       {result && status === 'completed' && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 w-full max-w-lg shadow-lg">
-          <p className="text-gray-900 dark:text-gray-100 text-lg leading-relaxed">
-            {result.text}
-          </p>
-          <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <span className="text-sm text-gray-500">
-              {result.processing_time_ms}ms • {(result.confidence * 100).toFixed(0)}% confiance
+        <div className="result-card panel w-full max-w-lg p-0 overflow-hidden">
+          {/* Header bar */}
+          <div className="px-4 py-2 bg-[var(--bg-elevated)] border-b border-[var(--border-subtle)] flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="led active" />
+              <span className="text-[0.6rem] uppercase tracking-[0.15em] text-[var(--text-muted)]">
+                Transcription
+              </span>
+            </div>
+            <span className="text-[0.6rem] text-[var(--text-muted)] font-mono">
+              {new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
             </span>
-            <span className="text-sm text-gray-500">
-              {result.duration_seconds.toFixed(1)}s
-            </span>
+          </div>
+
+          {/* Content */}
+          <div className="p-5">
+            <p className="text-[var(--text-primary)] text-base leading-relaxed font-body">
+              {result.text}
+            </p>
+          </div>
+
+          {/* Footer stats */}
+          <div className="px-4 py-3 bg-[var(--bg-elevated)] border-t border-[var(--border-subtle)] flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1.5">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+                <span className="text-[0.65rem] text-[var(--text-muted)] font-mono">
+                  {result.processing_time_ms}ms
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" strokeWidth="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                  <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+                <span className="text-[0.65rem] text-[var(--text-muted)] font-mono">
+                  {(result.confidence * 100).toFixed(0)}%
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2">
+                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+              </svg>
+              <span className="text-[0.65rem] text-[var(--text-muted)] font-mono">
+                {result.duration_seconds.toFixed(1)}s
+              </span>
+            </div>
           </div>
         </div>
       )}
