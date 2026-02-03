@@ -32,8 +32,7 @@
       "icons/icon.ico"
     ],
     "resources": [
-      "resources/openvino/*",
-      "resources/models/*"
+      "resources/models/ggml-tiny.bin"
     ]
   }
 }
