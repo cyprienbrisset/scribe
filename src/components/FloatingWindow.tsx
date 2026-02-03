@@ -13,8 +13,8 @@ interface StatusInfo {
 }
 
 // Dimensions de la fenêtre
-const COMPACT_SIZE = { width: 320, height: 60 };
-const EXTENDED_SIZE = { width: 400, height: 180 };
+const COMPACT_SIZE = { width: 350, height: 80 };
+const EXTENDED_SIZE = { width: 450, height: 200 };
 
 export default function FloatingWindow() {
   const [status, setStatus] = useState<RecordingStatus>("idle");
@@ -131,24 +131,25 @@ export default function FloatingWindow() {
   };
 
   return (
-    <div
-      className="floating-window"
-      onMouseDown={handleMouseDown}
-    >
-      {/* Barre de titre compacte */}
-      <div className="floating-header">
-        <div className="floating-status">
+    <div className="floating-window">
+      {/* Barre de titre - zone de drag */}
+      <div
+        className="floating-header"
+        data-tauri-drag-region
+        onMouseDown={handleMouseDown}
+      >
+        <div className="floating-status" data-tauri-drag-region>
           <span
             className={`status-led ${status === "recording" ? "recording" : status === "processing" ? "processing" : "idle"}`}
           />
-          <span className="status-label">{getStatusLabel()}</span>
+          <span className="status-label" data-tauri-drag-region>{getStatusLabel()}</span>
         </div>
         <div className="floating-controls">
           <button onClick={handleMinimize} className="control-btn" title="Minimiser">
-            -
+            −
           </button>
           <button onClick={handleClose} className="control-btn close" title="Fermer">
-            x
+            ×
           </button>
         </div>
       </div>
