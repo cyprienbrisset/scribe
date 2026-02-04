@@ -87,6 +87,27 @@ pub enum EngineType {
     Vosk,
 }
 
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Default)]
+#[serde(rename_all = "lowercase")]
+pub enum ParakeetModelSize {
+    #[default]
+    Tdt06bV3,
+}
+
+impl ParakeetModelSize {
+    pub fn model_name(&self) -> &'static str {
+        match self {
+            ParakeetModelSize::Tdt06bV3 => "parakeet-tdt-0.6b-v3",
+        }
+    }
+
+    pub fn display_name(&self) -> &'static str {
+        match self {
+            ParakeetModelSize::Tdt06bV3 => "Parakeet TDT 0.6B v3 (Multilingual)",
+        }
+    }
+}
+
 impl EngineType {
     pub fn display_name(&self) -> &'static str {
         match self {
@@ -230,6 +251,8 @@ pub struct AppSettings {
     pub engine_type: EngineType,
     #[serde(default)]
     pub vosk_language: Option<VoskLanguage>,
+    #[serde(default)]
+    pub parakeet_model: ParakeetModelSize,
 }
 
 fn default_true() -> bool {
@@ -270,6 +293,7 @@ impl Default for AppSettings {
             hotkey_translate: "CommandOrControl+Shift+T".to_string(),
             engine_type: EngineType::default(),
             vosk_language: None,
+            parakeet_model: ParakeetModelSize::default(),
         }
     }
 }
