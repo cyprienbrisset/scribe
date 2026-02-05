@@ -5,15 +5,15 @@
 <h1 align="center">WakaScribe</h1>
 
 <p align="center">
-  <strong>🎙️ Dictée vocale intelligente, locale et privée</strong>
+  <strong>Dictée vocale intelligente, locale et privée</strong>
 </p>
 
 <p align="center">
   <a href="#-fonctionnalités">Fonctionnalités</a> •
+  <a href="#-moteurs-de-transcription">Moteurs</a> •
   <a href="#-installation">Installation</a> •
   <a href="#-utilisation">Utilisation</a> •
   <a href="#-paramètres">Paramètres</a> •
-  <a href="#-raccourcis-clavier">Raccourcis</a> •
   <a href="#-faq">FAQ</a>
 </p>
 
@@ -26,26 +26,27 @@
 
 ---
 
-## 🌟 Présentation
+## Présentation
 
 **WakaScribe** est une application de dictée vocale nouvelle génération qui transforme votre voix en texte avec une précision remarquable. Contrairement aux solutions cloud, WakaScribe fonctionne **100% en local** sur votre machine, garantissant une confidentialité totale de vos données.
 
-### ✨ Points forts
+### Points forts
 
 | | |
 |---|---|
-| 🔒 **100% Local** | Aucune donnée n'est envoyée sur Internet. Votre vie privée est préservée. |
-| ⚡ **Ultra rapide** | Transcription en temps réel grâce à Whisper.cpp optimisé |
-| 🌍 **Multilingue** | Support de 99 langues avec détection automatique |
-| 🤖 **IA Intégrée** | Amélioration du texte via LLM (optionnel, Groq) |
-| 💻 **Cross-platform** | macOS, Windows et Linux |
-| 🆓 **Gratuit** | Freeware, usage illimité |
+| **100% Local** | Aucune donnée n'est envoyée sur Internet. Votre vie privée est préservée. |
+| **Ultra rapide** | Transcription en temps réel grâce à des moteurs optimisés |
+| **Multi-moteurs** | Whisper, Vosk ou Parakeet selon vos besoins |
+| **Multilingue** | Support de 99 langues avec détection automatique |
+| **IA Intégrée** | Amélioration du texte via LLM (optionnel, Groq) |
+| **Cross-platform** | macOS, Windows et Linux |
+| **Gratuit** | Freeware, usage illimité |
 
 ---
 
-## 🚀 Fonctionnalités
+## Fonctionnalités
 
-### 🎤 Dictée vocale
+### Dictée vocale
 
 #### Mode Push-to-Talk (PTT)
 Maintenez une touche pour parler, relâchez pour transcrire et coller automatiquement.
@@ -57,115 +58,148 @@ Maintenir ⌘+Shift+Espace → Parler → Relâcher → Texte collé automatique
 #### Mode Toggle
 Cliquez pour démarrer/arrêter l'enregistrement via l'interface.
 
+#### Streaming temps réel
+Voyez le texte apparaître en temps réel pendant que vous parlez.
+
 ---
 
-### 📝 Modes de dictée
+### Transcription de fichiers audio
+
+<p align="center">
+  <img src="docs/screenshots/files-screen.png" alt="Transcription de fichiers" width="500" />
+</p>
+
+Transcrivez vos fichiers audio existants :
+
+| Format | Extension |
+|--------|-----------|
+| WAV | `.wav` |
+| MP3 | `.mp3` |
+| M4A/AAC | `.m4a` |
+| FLAC | `.flac` |
+| OGG Vorbis | `.ogg` |
+| WebM | `.webm` |
+
+- Glissez-déposez vos fichiers ou utilisez le sélecteur
+- Transcription par lot (plusieurs fichiers à la fois)
+- Rééchantillonnage automatique vers 16kHz
+
+---
+
+### Modes de dictée
 
 WakaScribe adapte la transcription selon le contexte :
 
-| Mode | Icône | Description | Optimisation |
-|------|-------|-------------|--------------|
-| **Général** | 📄 | Texte standard, emails, notes | Ponctuation naturelle |
-| **Email** | 📧 | Optimisé pour les courriels | Formules de politesse, structure |
-| **Code** | 💻 | Pour les développeurs | Préserve la syntaxe technique |
-| **Notes** | 📋 | Prise de notes rapide | Format concis, bullet points |
+| Mode | Description | Optimisation |
+|------|-------------|--------------|
+| **Général** | Texte standard, emails, notes | Ponctuation naturelle |
+| **Email** | Optimisé pour les courriels | Formules de politesse, structure |
+| **Code** | Pour les développeurs | Préserve la syntaxe technique |
+| **Notes** | Prise de notes rapide | Format concis, bullet points |
 
 ---
 
-### 🤖 Amélioration par IA (LLM)
+### Amélioration par IA (LLM)
 
 Activez l'amélioration par intelligence artificielle pour :
 
-- ✅ Corriger automatiquement la grammaire et l'orthographe
-- ✅ Ajouter la ponctuation manquante
-- ✅ Reformuler pour plus de clarté
-- ✅ Adapter le style au mode de dictée
+- Corriger automatiquement la grammaire et l'orthographe
+- Ajouter la ponctuation manquante
+- Reformuler pour plus de clarté
+- Adapter le style au mode de dictée
 
-**Modes LLM disponibles :**
-
-| Mode | Icône | Description |
-|------|-------|-------------|
-| **Correction** | 🔧 | Corrige les erreurs sans modifier le style |
-| **Amélioration** | ✨ | Reformule pour plus de clarté et fluidité |
-| **Formatage** | 📐 | Structure le texte (paragraphes, listes) |
-
-> 💡 **Note** : Le LLM utilise l'API Groq (gratuite) et nécessite une connexion Internet.
+> **Note** : Le LLM utilise l'API Groq (gratuite) et nécessite une connexion Internet.
 
 ---
 
-### 🗣️ Commandes vocales
+### Commandes vocales
 
 Contrôlez la ponctuation et le formatage avec votre voix :
 
 | Commande vocale | Résultat |
 |-----------------|----------|
 | "Nouveau paragraphe" | ↵ (saut de ligne) |
-| "Nouvelle ligne" | ↵ (saut de ligne) |
 | "Point" | . |
 | "Virgule" | , |
 | "Point d'interrogation" | ? |
 | "Point d'exclamation" | ! |
 | "Deux points" | : |
-| "Point virgule" | ; |
 | "Ouvrir les guillemets" | « |
 | "Fermer les guillemets" | » |
-| "Ouvrir parenthèse" | ( |
-| "Fermer parenthèse" | ) |
-| "Tiret" | - |
 
 ---
 
-### 📜 Historique
-
-Accédez facilement à vos transcriptions passées :
-
-- 📋 **50 dernières transcriptions** conservées
-- 🔍 Accès rapide depuis l'onglet Historique
-- 📋 **Copie en un clic** dans le presse-papier
-- ⏱️ Affichage de la durée et du temps de traitement
-- 🗑️ Suppression individuelle ou totale
+### Historique
 
 <p align="center">
   <img src="docs/screenshots/history-screen.png" alt="Historique" width="500" />
 </p>
 
----
+Accédez facilement à vos transcriptions passées :
 
-### 🪟 Fenêtre flottante
-
-Une fenêtre compacte et toujours visible pour :
-
-- 👁️ Voir le statut d'enregistrement en temps réel
-- 📝 Afficher la transcription en cours (streaming)
-- 🏷️ Voir le mode actif et le statut LLM
-- 🖱️ Déplaçable par glisser-déposer
-- 📌 Reste au-dessus des autres fenêtres
+- **50 dernières transcriptions** conservées
+- Accès rapide depuis l'onglet Historique
+- **Copie en un clic** dans le presse-papier
+- Affichage de la durée et du temps de traitement
+- Suppression individuelle ou totale
 
 ---
 
-### 🔔 Icône système (Tray)
+### Traduction instantanée
 
-WakaScribe reste accessible via l'icône dans la barre de menu / barre des tâches :
+Traduisez le texte sélectionné dans n'importe quelle application :
 
-| État | Icône | Signification |
-|------|-------|---------------|
-| Prêt | 🟢 | L'application est prête |
-| Enregistrement | 🔴 | Capture audio en cours |
+1. Sélectionnez du texte
+2. Appuyez sur `⌘+Shift+T` (ou votre raccourci personnalisé)
+3. Le texte traduit remplace la sélection
 
-**Menu disponible :**
-- 🏠 Accueil - Ouvrir la fenêtre principale
-- 📋 Coller dernière transcription
-- 🎤 Sélection du microphone
-- 🌍 Sélection de la langue
-- ⌨️ Raccourcis clavier
-- ❓ Aide
-- 🚪 Quitter
+**Langues cibles disponibles** : Français, Anglais, Allemand, Espagnol, Italien, Portugais, Néerlandais, Russe, Chinois, Japonais, Coréen, Arabe
 
 ---
 
-## 📥 Installation
+## Moteurs de transcription
 
-### 🍎 macOS
+<p align="center">
+  <img src="docs/screenshots/settings-panel.png" alt="Paramètres - Moteurs" width="400" />
+</p>
+
+WakaScribe propose trois moteurs de transcription :
+
+### Whisper (OpenAI)
+
+| Modèle | Taille | Qualité | Recommandé pour |
+|--------|--------|---------|-----------------|
+| **Tiny** | 75 Mo | ⭐⭐ | Tests rapides |
+| **Small** | 466 Mo | ⭐⭐⭐ | Usage quotidien |
+| **Medium** | 1.5 Go | ⭐⭐⭐⭐ | Qualité maximale |
+
+- 99 langues supportées
+- Haute précision
+- Fonctionne sur tous les systèmes
+
+### Vosk
+
+- Modèles légers et rapides
+- Idéal pour les machines moins puissantes
+- Langues principales : Français, Anglais, Allemand, Espagnol, etc.
+
+### Parakeet (Apple Silicon)
+
+| Variante | Technologie | Plateforme |
+|----------|-------------|------------|
+| **Parakeet TDT 0.6B v3 CoreML** | CoreML | macOS (Apple Silicon) |
+| **Parakeet TDT 0.6B v3 ONNX** | ONNX Runtime | Windows, Linux |
+
+- Modèle NVIDIA NeMo optimisé
+- Excellente qualité pour le français et l'anglais
+- Accélération matérielle native sur Mac M1/M2/M3/M4
+- Source : [FluidInference/parakeet-tdt-0.6b-v3-coreml](https://huggingface.co/FluidInference/parakeet-tdt-0.6b-v3-coreml)
+
+---
+
+## Installation
+
+### macOS
 
 1. **Téléchargez** le fichier `.dmg` correspondant à votre Mac :
    - **Mac Intel** : `WakaScribe_x64.dmg`
@@ -177,23 +211,20 @@ WakaScribe reste accessible via l'icône dans la barre de menu / barre des tâch
 
 4. **Premier lancement** : Clic droit → Ouvrir (contournement Gatekeeper)
 
-5. **⚠️ Important** : Autorisez les permissions :
+5. **Autorisez les permissions** :
    ```
    Réglages Système → Confidentialité et sécurité → Microphone → ✅ WakaScribe
    Réglages Système → Confidentialité et sécurité → Accessibilité → ✅ WakaScribe
    ```
 
-### 🪟 Windows
+### Windows
 
 1. **Téléchargez** `WakaScribe_Setup.exe`
-
 2. **Exécutez** l'installateur
-
 3. **Suivez** les instructions à l'écran
-
 4. **Lancez** WakaScribe depuis le menu Démarrer
 
-### 🐧 Linux
+### Linux
 
 1. **Téléchargez** le paquet correspondant :
    - `.deb` pour Ubuntu/Debian
@@ -224,95 +255,85 @@ WakaScribe reste accessible via l'icône dans la barre de menu / barre des tâch
 
 ---
 
-## 🎯 Utilisation
+## Utilisation
 
-### 🏁 Premier lancement
+### Premier lancement
 
-#### Étape 1 : Télécharger un modèle
+#### Étape 1 : Choisir un moteur
 
-Au premier lancement, téléchargez un modèle de reconnaissance vocale :
+Sélectionnez le moteur de transcription adapté à votre configuration :
 
-| Modèle | Taille | Qualité | Vitesse | Recommandé pour |
-|--------|--------|---------|---------|-----------------|
-| **Tiny** | 75 Mo | ⭐⭐ | ⚡⚡⚡⚡ | Tests rapides |
-| **Small** | 466 Mo | ⭐⭐⭐ | ⚡⚡⚡ | ✅ Usage quotidien |
-| **Medium** | 1.5 Go | ⭐⭐⭐⭐ | ⚡⚡ | Qualité maximale |
+- **Mac M1/M2/M3/M4** : Parakeet CoreML (recommandé)
+- **Mac Intel / Windows / Linux** : Whisper Small
+- **Machine peu puissante** : Vosk
 
-> 💡 **Recommandation** : Commencez avec **Small** pour un bon équilibre.
+#### Étape 2 : Télécharger le modèle
 
-#### Étape 2 : Configurer le microphone
+Le premier téléchargement peut prendre quelques minutes selon votre connexion.
+
+#### Étape 3 : Configurer le microphone
 
 Si vous avez plusieurs microphones, sélectionnez celui que vous souhaitez utiliser dans les paramètres.
 
-#### Étape 3 : Tester la dictée
+#### Étape 4 : Tester la dictée
 
 Cliquez sur le bouton micro central et parlez !
 
 ---
 
-### 📋 Workflow quotidien
+### Workflow quotidien
 
 ```
-1. 🎯 Placez votre curseur là où vous voulez écrire (email, document, chat...)
-2. 🎤 Maintenez ⌘+Shift+Espace (ou votre raccourci personnalisé)
-3. 🗣️ Parlez naturellement
-4. ✋ Relâchez la touche
-5. ✨ Le texte apparaît automatiquement !
+1. Placez votre curseur là où vous voulez écrire (email, document, chat...)
+2. Maintenez ⌘+Shift+Espace (ou votre raccourci personnalisé)
+3. Parlez naturellement
+4. Relâchez la touche
+5. Le texte apparaît automatiquement !
 ```
 
-### 💡 Conseils pour de meilleurs résultats
+### Conseils pour de meilleurs résultats
 
-- 🎤 **Parlez clairement** mais naturellement
-- 🔇 **Évitez le bruit de fond** excessif
-- 📏 **Phrases complètes** : la ponctuation est mieux détectée
-- 🌍 **Une seule langue** par enregistrement pour de meilleurs résultats
+- **Parlez clairement** mais naturellement
+- **Évitez le bruit de fond** excessif
+- **Phrases complètes** : la ponctuation est mieux détectée
+- **Une seule langue** par enregistrement pour de meilleurs résultats
 
 ---
 
-## ⚙️ Paramètres
+## Paramètres
 
 Accédez aux paramètres via le bouton ⚙️ ou `⌘+,`
 
-<p align="center">
-  <img src="docs/screenshots/settings-panel.png" alt="Paramètres" width="400" />
-  <img src="docs/screenshots/settings-panel-2.png" alt="Paramètres - Options" width="400" />
-</p>
+### Audio
 
-### 🎤 Audio
+| Paramètre | Description |
+|-----------|-------------|
+| **Microphone** | Périphérique d'entrée audio |
+| **Streaming** | Affichage temps réel pendant l'enregistrement |
 
-| Paramètre | Description | Options |
-|-----------|-------------|---------|
-| **Microphone** | Périphérique d'entrée audio | Liste des micros disponibles |
-| **Streaming** | Affichage temps réel pendant l'enregistrement | Activé / Désactivé |
+### Moteur de transcription
 
-### 🌍 Langue
+| Paramètre | Description |
+|-----------|-------------|
+| **Whisper** | Moteur OpenAI, haute précision |
+| **Vosk** | Moteur léger et rapide |
+| **Parakeet** | Moteur NVIDIA NeMo, optimisé Apple Silicon |
 
-| Paramètre | Description | Options |
-|-----------|-------------|---------|
-| **Langue** | Langue parlée | 99 langues + Auto |
-| **Détection auto** | Laisse Whisper détecter | Activé / Désactivé |
+### Langue
 
-**Langues principales supportées :**
-🇫🇷 Français • 🇬🇧 English • 🇩🇪 Deutsch • 🇪🇸 Español • 🇮🇹 Italiano • 🇵🇹 Português • 🇳🇱 Nederlands • 🇵🇱 Polski • 🇷🇺 Русский • 🇨🇳 中文 • 🇯🇵 日本語 • 🇰🇷 한국어 • 🇸🇦 العربية
+| Paramètre | Description |
+|-----------|-------------|
+| **Langue** | Langue parlée (99 langues + Auto) |
+| **Détection auto** | Laisse le moteur détecter la langue |
 
-### 📝 Dictée
+### LLM (Intelligence Artificielle)
 
-| Paramètre | Description | Options |
-|-----------|-------------|---------|
-| **Mode de dictée** | Contexte d'utilisation | Général, Email, Code, Notes |
-| **Commandes vocales** | Reconnaissance des commandes | Activé / Désactivé |
-| **Copie automatique** | Copier après transcription | Activé / Désactivé |
-| **Auto-paste** | Coller automatiquement | Activé / Désactivé |
+| Paramètre | Description |
+|-----------|-------------|
+| **Activer LLM** | Amélioration par IA |
+| **Clé API Groq** | Authentification (gratuite) |
 
-### 🤖 LLM (Intelligence Artificielle)
-
-| Paramètre | Description | Options |
-|-----------|-------------|---------|
-| **Activer LLM** | Amélioration par IA | Activé / Désactivé |
-| **Mode LLM** | Type de traitement | Correction, Amélioration, Formatage |
-| **Clé API Groq** | Authentification | Votre clé API |
-
-#### 🔑 Obtenir une clé API Groq (gratuite)
+#### Obtenir une clé API Groq (gratuite)
 
 1. Rendez-vous sur [console.groq.com](https://console.groq.com)
 2. Créez un compte gratuit
@@ -320,58 +341,45 @@ Accédez aux paramètres via le bouton ⚙️ ou `⌘+,`
 4. Cliquez sur **Create API Key**
 5. Copiez la clé et collez-la dans WakaScribe
 
-### ⌨️ Raccourcis
+### Raccourcis
 
-| Paramètre | Description | Défaut |
-|-----------|-------------|--------|
-| **Push-to-Talk** | Maintenir pour dicter | `⌘+Shift+Espace` |
-| **Toggle Record** | Basculer enregistrement | `⌘+Shift+R` |
-
-> 💡 Cliquez sur le champ et appuyez sur votre nouvelle combinaison pour modifier.
-
-### 📦 Modèles Whisper
-
-| Action | Description |
-|--------|-------------|
-| **📥 Télécharger** | Télécharge un nouveau modèle |
-| **🗑️ Supprimer** | Supprime un modèle installé |
-| **🔄 Changer** | Bascule vers un autre modèle |
+| Paramètre | Défaut |
+|-----------|--------|
+| **Push-to-Talk** | `⌘+Shift+Espace` |
+| **Toggle Record** | `⌘+Shift+R` |
+| **Traduction** | `⌘+Shift+T` |
 
 ---
 
-## ⌨️ Raccourcis clavier
+## Raccourcis clavier
 
-<p align="center">
-  <img src="docs/screenshots/settings-shortcuts.png" alt="Raccourcis" width="400" />
-</p>
-
-### 🌐 Raccourcis globaux
+### Raccourcis globaux
 
 Ces raccourcis fonctionnent même quand WakaScribe n'est pas au premier plan :
 
 | Raccourci macOS | Raccourci Windows/Linux | Action |
 |-----------------|------------------------|--------|
-| `⌘+Shift+Espace` | `Ctrl+Shift+Espace` | 🎤 Push-to-Talk (maintenir) |
-| `⌘+Shift+R` | `Ctrl+Shift+R` | 🔴 Toggle enregistrement |
-| `⌥+⌘+V` | `Alt+Ctrl+V` | 📋 Coller dernière transcription |
+| `⌘+Shift+Espace` | `Ctrl+Shift+Espace` | Push-to-Talk (maintenir) |
+| `⌘+Shift+R` | `Ctrl+Shift+R` | Toggle enregistrement |
+| `⌘+Shift+T` | `Ctrl+Shift+T` | Traduire la sélection |
+| `⌥+⌘+V` | `Alt+Ctrl+V` | Coller dernière transcription |
 
-### 🖥️ Dans l'application
+### Dans l'application
 
 | Raccourci macOS | Raccourci Windows/Linux | Action |
 |-----------------|------------------------|--------|
-| `⌘+,` | `Ctrl+,` | ⚙️ Ouvrir les paramètres |
-| `⌘+1` | `Ctrl+1` | 🎤 Onglet Dictée |
-| `⌘+2` | `Ctrl+2` | 📜 Onglet Historique |
-| `⌘+Q` | `Alt+F4` | 🚪 Quitter |
+| `⌘+,` | `Ctrl+,` | Ouvrir les paramètres |
+| `⌘+1` | `Ctrl+1` | Onglet Dictée |
+| `⌘+2` | `Ctrl+2` | Onglet Historique |
+| `⌘+3` | `Ctrl+3` | Onglet Fichiers |
+| `⌘+Q` | `Alt+F4` | Quitter |
 
 ---
 
-## 🔧 Dépannage
-
-### 🎤 Le microphone n'est pas détecté
+## Dépannage
 
 <details>
-<summary>Cliquez pour voir la solution</summary>
+<summary><strong>Le microphone n'est pas détecté</strong></summary>
 
 1. Vérifiez que le microphone est correctement branché
 2. **macOS** : Réglages Système → Confidentialité → Microphone → ✅ WakaScribe
@@ -379,10 +387,8 @@ Ces raccourcis fonctionnent même quand WakaScribe n'est pas au premier plan :
 4. Redémarrez WakaScribe
 </details>
 
-### 📋 L'auto-paste ne fonctionne pas
-
 <details>
-<summary>Cliquez pour voir la solution</summary>
+<summary><strong>L'auto-paste ne fonctionne pas</strong></summary>
 
 **macOS :**
 ```
@@ -403,21 +409,17 @@ sudo apt install wtype wl-clipboard
 ```
 </details>
 
-### 🐢 La transcription est lente
-
 <details>
-<summary>Cliquez pour voir la solution</summary>
+<summary><strong>La transcription est lente</strong></summary>
 
-1. Utilisez un modèle plus léger (Tiny ou Small)
-2. Fermez les applications gourmandes en ressources
-3. **macOS** : Vérifiez que vous utilisez la version native (Intel ou ARM selon votre Mac)
+1. Utilisez un modèle plus léger (Tiny ou Vosk)
+2. Sur Mac Apple Silicon, utilisez Parakeet CoreML
+3. Fermez les applications gourmandes en ressources
 4. Redémarrez l'application
 </details>
 
-### 🤖 Le LLM ne fonctionne pas
-
 <details>
-<summary>Cliquez pour voir la solution</summary>
+<summary><strong>Le LLM ne fonctionne pas</strong></summary>
 
 1. Vérifiez votre connexion Internet
 2. Dans Paramètres → LLM :
@@ -426,163 +428,125 @@ sudo apt install wtype wl-clipboard
 3. Si la clé est invalide, générez-en une nouvelle sur [console.groq.com](https://console.groq.com)
 </details>
 
-### 🔇 Pas de son capturé
-
-<details>
-<summary>Cliquez pour voir la solution</summary>
-
-1. Testez votre microphone dans une autre application
-2. Dans les paramètres, sélectionnez explicitement votre microphone
-3. Augmentez le volume d'entrée du microphone dans les paramètres système
-</details>
-
 ---
 
-## ❓ FAQ
+## FAQ
 
 <details>
-<summary><strong>💰 WakaScribe est-il vraiment gratuit ?</strong></summary>
+<summary><strong>WakaScribe est-il vraiment gratuit ?</strong></summary>
 
 Oui ! WakaScribe est un freeware 100% gratuit. Pas d'abonnement, pas de limite d'utilisation, pas de publicité.
 </details>
 
 <details>
-<summary><strong>🔒 Mes données vocales sont-elles envoyées sur Internet ?</strong></summary>
+<summary><strong>Mes données vocales sont-elles envoyées sur Internet ?</strong></summary>
 
-**Non.** La transcription Whisper est effectuée **100% en local** sur votre machine. Vos enregistrements audio ne quittent jamais votre ordinateur.
+**Non.** La transcription est effectuée **100% en local** sur votre machine. Vos enregistrements audio ne quittent jamais votre ordinateur.
 
 **Exception** : Si vous activez le LLM, le **texte transcrit** (pas l'audio) est envoyé à l'API Groq pour amélioration. Cette fonctionnalité est optionnelle.
 </details>
 
 <details>
-<summary><strong>📊 Quelle est la différence entre les modèles Tiny, Small et Medium ?</strong></summary>
+<summary><strong>Quel moteur choisir ?</strong></summary>
 
-| Modèle | Précision | Vitesse | RAM | Recommandation |
-|--------|-----------|---------|-----|----------------|
-| Tiny | ⭐⭐ | ⚡⚡⚡⚡ | ~1 Go | Tests |
-| Small | ⭐⭐⭐ | ⚡⚡⚡ | ~2 Go | ✅ Quotidien |
-| Medium | ⭐⭐⭐⭐ | ⚡⚡ | ~4 Go | Pro |
+| Votre configuration | Moteur recommandé |
+|---------------------|-------------------|
+| Mac M1/M2/M3/M4 | Parakeet CoreML |
+| Mac Intel | Whisper Small |
+| PC moderne | Whisper Small |
+| PC ancien | Vosk |
 </details>
 
 <details>
-<summary><strong>✈️ Puis-je utiliser WakaScribe hors ligne ?</strong></summary>
+<summary><strong>Puis-je utiliser WakaScribe hors ligne ?</strong></summary>
 
-**Oui !** Toutes les fonctionnalités principales (transcription, commandes vocales, historique) fonctionnent **sans connexion Internet**.
+**Oui !** Toutes les fonctionnalités principales (transcription, commandes vocales, historique, transcription de fichiers) fonctionnent **sans connexion Internet**.
 
-Seule l'amélioration LLM nécessite une connexion.
+Seuls le LLM et la traduction nécessitent une connexion.
 </details>
 
 <details>
-<summary><strong>🌍 Quelles langues sont supportées ?</strong></summary>
+<summary><strong>Quelles langues sont supportées ?</strong></summary>
 
-WakaScribe supporte **99 langues** grâce à Whisper, dont :
-
-- 🇫🇷 Français
-- 🇬🇧 Anglais
-- 🇩🇪 Allemand
-- 🇪🇸 Espagnol
-- 🇮🇹 Italien
-- 🇵🇹 Portugais
-- 🇳🇱 Néerlandais
-- 🇵🇱 Polonais
-- 🇷🇺 Russe
-- 🇨🇳 Chinois (simplifié et traditionnel)
-- 🇯🇵 Japonais
-- 🇰🇷 Coréen
-- 🇸🇦 Arabe
-- 🇮🇳 Hindi
-- Et bien d'autres...
-</details>
-
-<details>
-<summary><strong>🔑 Comment obtenir une clé API Groq gratuite ?</strong></summary>
-
-1. Allez sur [console.groq.com](https://console.groq.com)
-2. Créez un compte gratuit (email ou Google)
-3. Dans le menu, allez dans **API Keys**
-4. Cliquez sur **Create API Key**
-5. Donnez un nom (ex: "WakaScribe")
-6. Copiez la clé générée
-7. Collez-la dans WakaScribe → Paramètres → LLM
-</details>
-
-<details>
-<summary><strong>🖥️ WakaScribe fonctionne-t-il sur mon Mac M1/M2/M3/M4 ?</strong></summary>
-
-**Oui !** WakaScribe est compilé nativement pour Apple Silicon. Téléchargez la version `arm64` pour des performances optimales.
+Avec Whisper, WakaScribe supporte **99 langues**, dont :
+Français, Anglais, Allemand, Espagnol, Italien, Portugais, Néerlandais, Polonais, Russe, Chinois, Japonais, Coréen, Arabe, Hindi, et bien d'autres.
 </details>
 
 ---
 
-## 📊 Performances
+## Performances
 
 ### Vitesse de transcription
 
-| Configuration | Modèle Small | Modèle Medium |
-|--------------|--------------|---------------|
-| Mac M1/M2/M3/M4 | ~12x temps réel | ~8x temps réel |
-| Mac Intel i7+ | ~6x temps réel | ~4x temps réel |
-| Windows (CPU moderne) | ~5x temps réel | ~3x temps réel |
-| Linux (CPU moderne) | ~5x temps réel | ~3x temps réel |
+| Configuration | Whisper Small | Parakeet CoreML |
+|--------------|---------------|-----------------|
+| Mac M1/M2/M3/M4 | ~12x temps réel | ~15x temps réel |
+| Mac Intel i7+ | ~6x temps réel | N/A |
+| Windows (CPU moderne) | ~5x temps réel | ~8x temps réel (ONNX) |
 
-> 📝 **Exemple** : Un audio de 10 secondes est transcrit en moins d'1 seconde sur Mac M2.
+> **Exemple** : Un audio de 10 secondes est transcrit en moins d'1 seconde sur Mac M2.
 
 ### Latence bout-en-bout
 
 | Étape | Durée typique |
 |-------|---------------|
 | Capture audio | Temps réel |
-| Transcription (Small) | < 1 sec |
+| Transcription | < 1 sec |
 | LLM (si activé) | 0.5-2 sec |
 | Auto-paste | < 100 ms |
 | **Total** | **< 3 sec** |
 
 ---
 
-## 🔒 Confidentialité & Sécurité
+## Confidentialité & Sécurité
 
 WakaScribe a été conçu avec la vie privée comme priorité absolue :
 
 | Aspect | Garantie |
 |--------|----------|
-| 🎤 **Audio** | Traité 100% localement, jamais envoyé |
-| 📊 **Télémétrie** | Aucune collecte de données |
-| 💾 **Historique** | Stocké uniquement sur votre machine |
-| 🔑 **Clés API** | Stockées dans le trousseau sécurisé du système |
-| 🤖 **LLM** | Optionnel - seul le texte est envoyé (pas l'audio) |
+| **Audio** | Traité 100% localement, jamais envoyé |
+| **Télémétrie** | Aucune collecte de données |
+| **Historique** | Stocké uniquement sur votre machine |
+| **Clés API** | Stockées dans le trousseau sécurisé du système |
+| **LLM** | Optionnel - seul le texte est envoyé (pas l'audio) |
 
 ---
 
-## 🆘 Support & Communauté
+## Stack technique
+
+```
+Frontend: React 18 + TypeScript + TailwindCSS + Zustand
+Backend:  Rust/Tauri 2.x + cpal + reqwest + keyring
+Moteurs:  Whisper.cpp (whisper-rs), Vosk, Parakeet (CoreML/ONNX)
+UI:       Design Frosted Touch (glassmorphism)
+```
+
+---
+
+## Support & Communauté
 
 | Canal | Lien |
 |-------|------|
-| 📧 Email | support@wakascribe.com |
-| 🐛 Signaler un bug | [GitHub Issues](https://github.com/wakastellar/wakascribe/issues) |
-| 💬 Discord | [Rejoindre](https://discord.gg/wakascribe) |
-| 🐦 Twitter | [@WakaScribe](https://twitter.com/wakascribe) |
+| Email | support@wakascribe.com |
+| Signaler un bug | [GitHub Issues](https://github.com/cyprienbrisset/scribe/issues) |
 
 ---
 
-## 📄 Licence
+## Licence
 
 WakaScribe est un **freeware** distribué gratuitement.
 
-- ✅ Usage personnel et professionnel autorisé
-- ✅ Distribution gratuite autorisée
-- ❌ Revente interdite
-- ❌ Modification du code source interdite
+- Usage personnel et professionnel autorisé
+- Distribution gratuite autorisée
+- Revente interdite
+- Modification du code source interdite
 
 ---
 
 <p align="center">
-  <img src="docs/wakastellar-logo.png" alt="WakaStellar" width="100" />
+  Fait avec ❤️ par <strong>Cyprien Brisset</strong>
 </p>
 
 <p align="center">
-  Fait avec ❤️ par <a href="https://wakastellar.com"><strong>WakaStellar</strong></a>
-</p>
-
-<p align="center">
-  <sub>© 2024-2026 WakaStellar. Tous droits réservés.</sub>
+  <sub>© 2024-2026 Tous droits réservés.</sub>
 </p>
