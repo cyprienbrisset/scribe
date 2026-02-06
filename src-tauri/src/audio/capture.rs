@@ -8,6 +8,7 @@ pub struct AudioCapture {
     stream: Option<Stream>,
     buffer: Arc<Mutex<Vec<f32>>>,
     sample_rate: u32,
+    channels: u16,
 }
 
 impl AudioCapture {
@@ -41,6 +42,7 @@ impl AudioCapture {
             stream: None,
             buffer: Arc::new(Mutex::new(Vec::new())),
             sample_rate: config.sample_rate().0,
+            channels: config.channels(),
         })
     }
 
@@ -63,17 +65,29 @@ impl AudioCapture {
         let config = device.default_input_config().map_err(|e| e.to_string())?;
 
         self.sample_rate = config.sample_rate().0;
+        self.channels = config.channels();
         self.buffer.lock().unwrap().clear();
 
         let buffer = self.buffer.clone();
+        let channels = self.channels as usize;
         let config: StreamConfig = config.into();
+
+        log::info!("Starting audio capture: {}Hz, {} channel(s)", self.sample_rate, channels);
 
         let stream = device
             .build_input_stream(
                 &config,
                 move |data: &[f32], _: &cpal::InputCallbackInfo| {
                     let mut buf = buffer.lock().unwrap();
-                    buf.extend_from_slice(data);
+                    // Convertir stéréo → mono si nécessaire
+                    if channels > 1 {
+                        for chunk in data.chunks(channels) {
+                            let mono: f32 = chunk.iter().sum::<f32>() / channels as f32;
+                            buf.push(mono);
+                        }
+                    } else {
+                        buf.extend_from_slice(data);
+                    }
                 },
                 |err| {
                     log::error!("Audio stream error: {}", err);

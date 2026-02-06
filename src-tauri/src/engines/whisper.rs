@@ -78,6 +78,9 @@ impl SpeechEngine for WhisperEngine {
         params.set_single_segment(true);
         params.set_no_context(true);
 
+        // Éviter les hallucinations (musique, sous-titres, etc.)
+        params.set_suppress_nst(true);
+
         // Créer un état pour cette transcription
         let mut state = ctx
             .create_state()

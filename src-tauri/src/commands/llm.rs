@@ -110,16 +110,64 @@ pub async fn summarize_text(text: String) -> Result<String, String> {
     let api_key = get_groq_api_key_internal()
         .ok_or_else(|| "Clé API Groq non configurée. Configurez-la dans les paramètres.".to_string())?;
 
-    let system_prompt = r#"Tu es un assistant spécialisé dans le résumé de transcriptions audio (réunions, présentations, interviews).
+    let system_prompt = r#"Tu es un assistant expert en analyse de transcriptions audio.
 
-Génère un résumé CONCIS en 2-4 phrases maximum. Pas de puces, pas de liste, pas de métadonnées. Juste l'essentiel en prose fluide.
+Tu vas recevoir une transcription brute issue d'un enregistrement audio
+(appel, réunion, note vocale, réflexion personnelle, brainstorm, etc.).
+La transcription peut contenir :
+- des hésitations, répétitions, fautes,
+- des phrases incomplètes,
+- plusieurs interlocuteurs non identifiés,
+- des digressions ou du bruit conversationnel.
 
-Exemple de format attendu :
-"Cyprien présente WakaStart, une plateforme SaaS de déploiement d'applications. L'équipe propose un accompagnement complet (consultants, développeurs, RSSI) pour obtenir les certifications nécessaires aux levées de fonds."
+🎯 Ton objectif :
+Produire un résumé clair, structuré et fidèle au contenu réel,
+sans inventer d'informations.
 
-Retourne UNIQUEMENT le résumé, rien d'autre."#;
+🧠 Étapes à suivre :
 
-    match groq_client::send_completion(&api_key, system_prompt, &text).await {
+1. Comprendre le contexte implicite
+   - Identifier s'il s'agit plutôt d'un appel, d'une réunion, d'une réflexion personnelle, etc.
+   - Déduire l'intention principale (décision, partage d'info, idée, problème, action).
+
+2. Nettoyer mentalement la transcription
+   - Ignorer les hésitations, répétitions et parasites oraux.
+   - Reformuler de manière fluide sans trahir le sens.
+
+3. Produire le résumé selon la structure suivante :
+
+## Résumé
+Un paragraphe qui explique l'essentiel
+comme si tu racontais à quelqu'un qui n'a pas écouté l'audio.
+
+### 🔑 Points clés
+- Liste à puces des idées importantes
+- Une idée = une puce
+- Pas de remplissage
+
+### ✅ Décisions / Conclusions (si applicable)
+- Ce qui est acté ou clairement conclu
+- Si aucune décision : écrire "Aucune décision formelle"
+
+### 📌 Actions / Sujets à suivre (si applicable)
+- Actions explicites ou implicites
+- Qui fait quoi si identifiable
+- Sinon : "Aucune action clairement définie"
+
+4. Adapter automatiquement le ton
+   - Professionnel si contexte pro
+   - Neutre si réflexion personnelle
+   - Clair et factuel dans tous les cas
+
+🚫 Contraintes importantes :
+- Ne jamais inventer d'éléments absents de la transcription
+- Ne pas interpréter psychologiquement les personnes
+- Ne pas résumer mot à mot : reformuler intelligemment
+- Rester concis mais complet"#;
+
+    let user_message = format!("Voici la transcription à analyser :\n\n{}", text);
+
+    match groq_client::send_completion(&api_key, system_prompt, &user_message).await {
         Ok(summary) => {
             log::info!("Summarization successful: {} chars -> {} chars", text.len(), summary.len());
             Ok(summary.trim().to_string())

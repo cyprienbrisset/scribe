@@ -28,30 +28,37 @@ impl AppState {
 
         log::info!("Resource path from Tauri: {:?}", resource_path);
 
-        // En mode développement, resource_dir() pointe vers target/debug/
-        let resource_path = if resource_path.join("models").exists() {
-            resource_path
+        // Trouver le chemin des modèles bundled
+        // En production: Contents/Resources/resources/models/
+        // En dev: src-tauri/resources/models/
+        let bundled_models_path = if resource_path.join("resources/models").exists() {
+            // Production bundle (Tauri met les fichiers dans resources/)
+            Some(resource_path.join("resources/models"))
+        } else if resource_path.join("models").exists() {
+            // Structure alternative
+            Some(resource_path.join("models"))
         } else {
+            // Mode développement - chercher depuis l'exécutable
             let dev_path = std::env::current_exe()
                 .ok()
                 .and_then(|p| p.parent().map(|p| p.to_path_buf()))
                 .and_then(|p| p.parent().map(|p| p.to_path_buf()))
                 .and_then(|p| p.parent().map(|p| p.to_path_buf()))
-                .map(|p| p.join("resources"));
+                .map(|p| p.join("resources/models"));
 
             if let Some(ref path) = dev_path {
-                if path.join("models").exists() {
-                    log::info!("Using dev resource path: {:?}", path);
-                    path.clone()
+                if path.exists() {
+                    log::info!("Using dev bundled models path: {:?}", path);
+                    Some(path.clone())
                 } else {
-                    resource_path
+                    None
                 }
             } else {
-                resource_path
+                None
             }
         };
 
-        log::info!("Final resource path: {:?}", resource_path);
+        log::info!("Bundled models path: {:?}", bundled_models_path);
 
         // Obtenir le dossier de données utilisateur
         let app_data_dir = app_handle
@@ -62,7 +69,7 @@ impl AppState {
         // Créer le ModelManager
         let model_manager = ModelManager::new(
             app_data_dir,
-            Some(resource_path.join("models")),
+            bundled_models_path,
         );
 
         // Helper to load Whisper engine

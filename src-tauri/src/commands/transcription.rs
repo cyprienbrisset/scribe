@@ -468,30 +468,42 @@ pub fn reset_recording_state(app: AppHandle, state: State<'_, AppState>) -> Resu
 }
 
 fn resample_audio(input: &[f32], from_rate: u32, to_rate: u32) -> Vec<f32> {
-    if from_rate == to_rate {
+    if from_rate == to_rate || input.is_empty() {
         return input.to_vec();
     }
 
-    let ratio = from_rate as f64 / to_rate as f64;
-    let output_len = (input.len() as f64 / ratio).ceil() as usize;
-    let mut output = Vec::with_capacity(output_len);
+    use rubato::{
+        Resampler, SincFixedIn, SincInterpolationParameters, SincInterpolationType, WindowFunction,
+    };
 
-    for i in 0..output_len {
-        let src_idx = i as f64 * ratio;
-        let idx_floor = src_idx.floor() as usize;
-        let idx_ceil = (idx_floor + 1).min(input.len() - 1);
-        let frac = src_idx - idx_floor as f64;
+    let params = SincInterpolationParameters {
+        sinc_len: 256,
+        f_cutoff: 0.95,
+        interpolation: SincInterpolationType::Linear,
+        oversampling_factor: 256,
+        window: WindowFunction::BlackmanHarris2,
+    };
 
-        let sample = if idx_floor < input.len() {
-            let s1 = input[idx_floor];
-            let s2 = input[idx_ceil];
-            s1 + (s2 - s1) * frac as f32
-        } else {
-            0.0
-        };
-
-        output.push(sample);
+    match SincFixedIn::<f32>::new(
+        to_rate as f64 / from_rate as f64,
+        2.0,
+        params,
+        input.len(),
+        1,
+    ) {
+        Ok(mut resampler) => {
+            let waves_in = vec![input.to_vec()];
+            match resampler.process(&waves_in, None) {
+                Ok(waves_out) => waves_out.into_iter().next().unwrap_or_default(),
+                Err(e) => {
+                    log::error!("Resample error: {}", e);
+                    input.to_vec()
+                }
+            }
+        }
+        Err(e) => {
+            log::error!("Failed to create resampler: {}", e);
+            input.to_vec()
+        }
     }
-
-    output
 }
