@@ -59,6 +59,12 @@ jobs:
         if: runner.os == 'Windows'
         run: choco install cmake --installargs '"ADD_CMAKE_TO_PATH=System"' -y
 
+      - name: Fix whisper.cpp i8mm build on Apple Silicon
+        if: matrix.rust-targets == 'aarch64-apple-darwin'
+        run: |
+          echo "CFLAGS=-U__ARM_FEATURE_MATMUL_INT8" >> $GITHUB_ENV
+          echo "CXXFLAGS=-U__ARM_FEATURE_MATMUL_INT8" >> $GITHUB_ENV
+
       - name: Install frontend dependencies
         run: npm ci
 
