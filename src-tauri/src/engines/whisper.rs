@@ -19,9 +19,12 @@ impl WhisperEngine {
             return Err(format!("Model file not found: {:?}", model_path));
         }
 
+        let mut ctx_params = WhisperContextParameters::default();
+        ctx_params.use_gpu = true;
+
         let ctx = WhisperContext::new_with_params(
             model_path.to_str().ok_or("Invalid model path")?,
-            WhisperContextParameters::default(),
+            ctx_params,
         )
         .map_err(|e| format!("Failed to load Whisper model: {}", e))?;
 
@@ -62,6 +65,12 @@ impl SpeechEngine for WhisperEngine {
         let ctx = self.ctx.lock().map_err(|e| format!("Lock error: {}", e))?;
 
         let mut params = FullParams::new(SamplingStrategy::Greedy { best_of: 1 });
+
+        // Utiliser les coeurs physiques pour l'inférence (min 1, max 8)
+        let n_threads = std::thread::available_parallelism()
+            .map(|n| (n.get() / 2).clamp(1, 8) as i32)
+            .unwrap_or(4);
+        params.set_n_threads(n_threads);
 
         // Configurer la langue
         if let Some(ref lang) = self.language {

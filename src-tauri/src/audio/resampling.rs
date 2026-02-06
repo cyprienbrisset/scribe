@@ -9,10 +9,10 @@ pub fn resample_audio(input: &[f32], from_rate: u32, to_rate: u32) -> Vec<f32> {
     };
 
     let params = SincInterpolationParameters {
-        sinc_len: 256,
+        sinc_len: 64,
         f_cutoff: 0.95,
         interpolation: SincInterpolationType::Linear,
-        oversampling_factor: 256,
+        oversampling_factor: 8,
         window: WindowFunction::BlackmanHarris2,
     };
 

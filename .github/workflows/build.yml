@@ -73,6 +73,12 @@ jobs:
           echo "CFLAGS=$EXTRA_FLAGS" >> $GITHUB_ENV
           echo "CXXFLAGS=$EXTRA_FLAGS" >> $GITHUB_ENV
 
+      - name: Download Whisper model (ggml-tiny.bin)
+        run: |
+          mkdir -p src-tauri/resources/models
+          curl -L --fail --silent --show-error -o src-tauri/resources/models/ggml-tiny.bin \
+            https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.bin
+
       - name: Install frontend dependencies
         run: npm ci
 
