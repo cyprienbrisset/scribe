@@ -70,17 +70,16 @@ export default function FloatingWindow() {
           clearInterval(durationInterval.current);
           durationInterval.current = null;
         }
+        // Reset du texte en mode idle
+        if (newStatus === "idle") {
+          setStreamingText("");
+        }
       }
     }).then((unlisten) => unlisteners.push(unlisten));
 
-    // Chunks de streaming
+    // Chunks de streaming — chaque chunk contient la transcription complète
     listen<StreamingChunk>("transcription-chunk", (event) => {
-      const chunk = event.payload;
-      if (chunk.is_final) {
-        setStreamingText(chunk.text);
-      } else {
-        setStreamingText((prev) => prev + chunk.text);
-      }
+      setStreamingText(event.payload.text);
     }).then((unlisten) => unlisteners.push(unlisten));
 
     // Infos de statut (mode, LLM)

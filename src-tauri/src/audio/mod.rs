@@ -1,5 +1,6 @@
 pub mod capture;
 pub mod decoder;
+pub mod resampling;
 pub mod streaming;
 
 pub use capture::*;

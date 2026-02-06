@@ -4,9 +4,7 @@ use std::path::PathBuf;
 use std::process::Command;
 
 fn main() {
-    // Setup Vosk library for macOS
     setup_vosk();
-
     tauri_build::build()
 }
 
@@ -15,86 +13,167 @@ fn setup_vosk() {
     let out_dir = env::var("OUT_DIR").unwrap();
     let vosk_dir = PathBuf::from(&out_dir).join("vosk");
 
-    // Only for macOS
-    if !target.contains("apple") && !target.contains("darwin") {
-        println!("cargo:warning=Vosk setup: Skipping non-macOS target");
+    let (url, lib_filename, zip_name, extracted_folder) = if target.contains("apple") || target.contains("darwin") {
+        (
+            "https://github.com/alphacep/vosk-api/releases/download/v0.3.42/vosk-osx-0.3.42.zip",
+            "libvosk.dylib",
+            "vosk-osx.zip",
+            "vosk-osx-0.3.42",
+        )
+    } else if target.contains("windows") {
+        (
+            "https://github.com/alphacep/vosk-api/releases/download/v0.3.42/vosk-win64-0.3.42.zip",
+            "libvosk.lib",
+            "vosk-win64.zip",
+            "vosk-win64-0.3.42",
+        )
+    } else if target.contains("linux") {
+        let arch_suffix = if target.contains("aarch64") { "aarch64" } else { "x86_64" };
+        let folder = format!("vosk-linux-{}-0.3.42", arch_suffix);
+        // Leak strings to get 'static lifetime needed for the tuple
+        let url_str = format!(
+            "https://github.com/alphacep/vosk-api/releases/download/v0.3.42/vosk-linux-{}-0.3.42.zip",
+            arch_suffix
+        );
+        (
+            Box::leak(url_str.into_boxed_str()) as &str,
+            "libvosk.so",
+            "vosk-linux.zip",
+            Box::leak(folder.into_boxed_str()) as &str,
+        )
+    } else {
+        println!("cargo:warning=Vosk setup: unsupported target '{}', skipping", target);
         return;
-    }
+    };
 
-    let lib_path = vosk_dir.join("libvosk.dylib");
+    let lib_path = vosk_dir.join(lib_filename);
 
-    // Check if already downloaded
+    // Already downloaded
     if lib_path.exists() {
-        println!("cargo:rustc-link-search=native={}", vosk_dir.display());
-        println!("cargo:rustc-link-lib=dylib=vosk");
+        set_link_flags(&vosk_dir, &target);
         return;
     }
 
-    println!("cargo:warning=Downloading Vosk library for macOS...");
+    println!("cargo:warning=Downloading Vosk library for {}...", target);
 
-    // Create directory
-    fs::create_dir_all(&vosk_dir).expect("Failed to create vosk directory");
-
-    let zip_path = vosk_dir.join("vosk-osx.zip");
-    let url = "https://github.com/alphacep/vosk-api/releases/download/v0.3.42/vosk-osx-0.3.42.zip";
-
-    // Download using curl
-    let status = Command::new("curl")
-        .args(["-L", "-o", zip_path.to_str().unwrap(), url])
-        .status()
-        .expect("Failed to download Vosk");
-
-    if !status.success() {
-        panic!("Failed to download Vosk library");
+    if let Err(e) = download_and_extract_vosk(&vosk_dir, url, zip_name, extracted_folder, &target) {
+        println!("cargo:warning=Vosk download failed: {}. Vosk engine will not be available.", e);
+        return;
     }
 
-    // Extract using unzip
-    let status = Command::new("unzip")
-        .args(["-o", zip_path.to_str().unwrap(), "-d", vosk_dir.to_str().unwrap()])
-        .status()
-        .expect("Failed to extract Vosk");
-
-    if !status.success() {
-        panic!("Failed to extract Vosk library");
+    // macOS: fix install_name for runtime loading
+    if target.contains("apple") || target.contains("darwin") {
+        let _ = Command::new("install_name_tool")
+            .args(["-id", "@executable_path/libvosk.dylib", lib_path.to_str().unwrap()])
+            .status();
     }
 
-    // Move library from extracted folder
-    let extracted_dir = vosk_dir.join("vosk-osx-0.3.42");
+    // Copy to target directories for runtime access
+    copy_to_target_dirs(&lib_path, lib_filename, &target);
+
+    println!("cargo:warning=Vosk library downloaded successfully");
+    set_link_flags(&vosk_dir, &target);
+}
+
+fn download_and_extract_vosk(
+    vosk_dir: &PathBuf,
+    url: &str,
+    zip_name: &str,
+    extracted_folder: &str,
+    target: &str,
+) -> Result<(), String> {
+    fs::create_dir_all(vosk_dir).map_err(|e| format!("Failed to create vosk directory: {}", e))?;
+
+    let zip_path = vosk_dir.join(zip_name);
+
+    // Download
+    let download_tool = if target.contains("windows") { "curl.exe" } else { "curl" };
+    let status = Command::new(download_tool)
+        .args(["-L", "--fail", "--silent", "--show-error", "-o", zip_path.to_str().unwrap(), url])
+        .status()
+        .map_err(|e| format!("Failed to run curl: {}", e))?;
+
+    if !status.success() {
+        return Err("curl download failed".to_string());
+    }
+
+    // Extract
+    if target.contains("windows") {
+        // Use PowerShell on Windows
+        let status = Command::new("powershell")
+            .args([
+                "-NoProfile", "-Command",
+                &format!(
+                    "Expand-Archive -Path '{}' -DestinationPath '{}' -Force",
+                    zip_path.display(),
+                    vosk_dir.display()
+                ),
+            ])
+            .status()
+            .map_err(|e| format!("Failed to run PowerShell: {}", e))?;
+
+        if !status.success() {
+            return Err("PowerShell extraction failed".to_string());
+        }
+    } else {
+        let status = Command::new("unzip")
+            .args(["-o", zip_path.to_str().unwrap(), "-d", vosk_dir.to_str().unwrap()])
+            .status()
+            .map_err(|e| format!("Failed to run unzip: {}", e))?;
+
+        if !status.success() {
+            return Err("unzip extraction failed".to_string());
+        }
+    }
+
+    // Move files from extracted subfolder to vosk_dir
+    let extracted_dir = vosk_dir.join(extracted_folder);
     if extracted_dir.exists() {
-        for entry in fs::read_dir(&extracted_dir).expect("Failed to read extracted dir") {
-            let entry = entry.expect("Failed to read entry");
+        for entry in fs::read_dir(&extracted_dir).map_err(|e| format!("Failed to read extracted dir: {}", e))? {
+            let entry = entry.map_err(|e| format!("Failed to read entry: {}", e))?;
             let path = entry.path();
-            let dest = vosk_dir.join(path.file_name().unwrap());
-            fs::rename(&path, &dest).expect("Failed to move file");
+            if let Some(name) = path.file_name() {
+                let dest = vosk_dir.join(name);
+                let _ = fs::rename(&path, &dest);
+            }
         }
         fs::remove_dir_all(&extracted_dir).ok();
     }
 
-    // Fix install_name for runtime loading
-    let _ = Command::new("install_name_tool")
-        .args(["-id", "@executable_path/libvosk.dylib", lib_path.to_str().unwrap()])
-        .status();
-
     // Clean up zip
     fs::remove_file(&zip_path).ok();
 
-    // Copy to target directories for runtime access
-    let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    Ok(())
+}
+
+fn set_link_flags(vosk_dir: &PathBuf, target: &str) {
+    println!("cargo:rustc-link-search=native={}", vosk_dir.display());
+    if target.contains("windows") {
+        println!("cargo:rustc-link-lib=static=libvosk");
+    } else {
+        println!("cargo:rustc-link-lib=dylib=vosk");
+    }
+}
+
+fn copy_to_target_dirs(lib_path: &PathBuf, lib_filename: &str, target: &str) {
+    let manifest_dir = match env::var("CARGO_MANIFEST_DIR") {
+        Ok(d) => d,
+        Err(_) => return,
+    };
+
     for target_dir in ["debug", "release"] {
         let dest_dir = PathBuf::from(&manifest_dir).join("target").join(target_dir);
         fs::create_dir_all(&dest_dir).ok();
-        let dest_lib = dest_dir.join("libvosk.dylib");
+        let dest_lib = dest_dir.join(lib_filename);
         if !dest_lib.exists() {
-            if fs::copy(&lib_path, &dest_lib).is_ok() {
-                // Fix install_name on the copied file too
-                let _ = Command::new("install_name_tool")
-                    .args(["-id", "@executable_path/libvosk.dylib", dest_lib.to_str().unwrap()])
-                    .status();
+            if fs::copy(lib_path, &dest_lib).is_ok() {
+                // macOS: fix install_name on the copied file too
+                if target.contains("apple") || target.contains("darwin") {
+                    let _ = Command::new("install_name_tool")
+                        .args(["-id", "@executable_path/libvosk.dylib", dest_lib.to_str().unwrap()])
+                        .status();
+                }
             }
         }
     }
-
-    println!("cargo:warning=Vosk library downloaded successfully");
-    println!("cargo:rustc-link-search=native={}", vosk_dir.display());
-    println!("cargo:rustc-link-lib=dylib=vosk");
 }

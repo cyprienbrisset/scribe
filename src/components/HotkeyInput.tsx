@@ -107,22 +107,22 @@ export function HotkeyInput({ value, onChange, disabled }: HotkeyInputProps) {
         type="button"
         onClick={handleClick}
         disabled={disabled}
-        className={`w-full p-3 text-left bg-[var(--bg-elevated)] border transition-all ${
+        className={`w-full p-3 text-left rounded-xl bg-[rgba(255,255,255,0.08)] border transition-all ${
           isRecording
-            ? 'border-[var(--accent-cyan)] ring-1 ring-[var(--accent-cyan)]'
-            : 'border-[var(--border-subtle)] hover:border-[var(--border-active)]'
+            ? 'border-[var(--accent-primary)] ring-1 ring-[var(--accent-primary)]'
+            : 'border-[var(--glass-border)] hover:border-[var(--glass-border-light)]'
         } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
       >
         <div className="flex items-center justify-between">
           <span className={`font-mono text-sm ${
-            isRecording ? 'text-[var(--accent-cyan)]' : 'text-[var(--text-primary)]'
+            isRecording ? 'text-[var(--accent-primary)]' : 'text-[var(--text-primary)]'
           }`}>
             {displayValue}
           </span>
           {isRecording ? (
             <button
               onClick={handleCancel}
-              className="text-[0.65rem] uppercase tracking-wider text-[var(--accent-red)] hover:underline"
+              className="text-[0.65rem] uppercase tracking-wider text-[var(--accent-danger)] hover:underline"
             >
               Annuler
             </button>

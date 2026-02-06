@@ -4,6 +4,9 @@ use std::sync::{Arc, Mutex};
 
 use crate::types::AudioDevice;
 
+/// Limite du buffer audio : 10 minutes à 48kHz mono
+const MAX_BUFFER_SAMPLES: usize = 48000 * 60 * 10;
+
 pub struct AudioCapture {
     stream: Option<Stream>,
     buffer: Arc<Mutex<Vec<f32>>>,
@@ -66,7 +69,9 @@ impl AudioCapture {
 
         self.sample_rate = config.sample_rate().0;
         self.channels = config.channels();
-        self.buffer.lock().unwrap().clear();
+        if let Ok(mut buf) = self.buffer.lock() {
+            buf.clear();
+        }
 
         let buffer = self.buffer.clone();
         let channels = self.channels as usize;
@@ -78,15 +83,19 @@ impl AudioCapture {
             .build_input_stream(
                 &config,
                 move |data: &[f32], _: &cpal::InputCallbackInfo| {
-                    let mut buf = buffer.lock().unwrap();
-                    // Convertir stéréo → mono si nécessaire
-                    if channels > 1 {
-                        for chunk in data.chunks(channels) {
-                            let mono: f32 = chunk.iter().sum::<f32>() / channels as f32;
-                            buf.push(mono);
+                    if let Ok(mut buf) = buffer.lock() {
+                        if buf.len() >= MAX_BUFFER_SAMPLES {
+                            return;
                         }
-                    } else {
-                        buf.extend_from_slice(data);
+                        // Convertir stéréo → mono si nécessaire
+                        if channels > 1 {
+                            for chunk in data.chunks(channels) {
+                                let mono: f32 = chunk.iter().sum::<f32>() / channels as f32;
+                                buf.push(mono);
+                            }
+                        } else {
+                            buf.extend_from_slice(data);
+                        }
                     }
                 },
                 |err| {
@@ -104,9 +113,13 @@ impl AudioCapture {
 
     pub fn stop(&mut self) -> Result<(Vec<f32>, u32), String> {
         self.stream = None;
-        let buffer = self.buffer.lock().unwrap().clone();
+        let buffer = self.buffer.lock()
+            .map_err(|e| format!("Failed to lock audio buffer: {}", e))?
+            .clone();
         let sample_rate = self.sample_rate;
-        self.buffer.lock().unwrap().clear();
+        if let Ok(mut buf) = self.buffer.lock() {
+            buf.clear();
+        }
         Ok((buffer, sample_rate))
     }
 
@@ -120,7 +133,9 @@ impl AudioCapture {
 
     /// Retourne un snapshot de l'audio accumulé sans arrêter l'enregistrement
     pub fn get_audio_snapshot(&self) -> (Vec<f32>, u32) {
-        let buffer = self.buffer.lock().unwrap().clone();
+        let buffer = self.buffer.lock()
+            .map(|buf| buf.clone())
+            .unwrap_or_default();
         (buffer, self.sample_rate)
     }
 }

@@ -34,7 +34,7 @@
       }
     ],
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' asset: https://asset.localhost data:; connect-src 'self' https://api.groq.com https://huggingface.co https://*.huggingface.co https://app.wakascribe.com; font-src 'self' data:"
     }
   },
   "bundle": {
@@ -52,8 +52,6 @@
       "icons/tray-iconTemplate.png",
       "icons/tray-iconTemplate@2x.png"
     ],
-    "externalBin": [
-      "binaries/parakeet-coreml"
-    ]
+    "externalBin": []
   }
 }

@@ -1,0 +1,10 @@
+export { AudioSection } from './AudioSection';
+export { EngineSection } from './EngineSection';
+export { LlmSection } from './LlmSection';
+export { TranslationSection } from './TranslationSection';
+export { DictationSection } from './DictationSection';
+export { TranscriptionSection } from './TranscriptionSection';
+export { OptionsSection } from './OptionsSection';
+export { SystemSection } from './SystemSection';
+export { ShortcutsSection } from './ShortcutsSection';
+export { DictionarySection } from './DictionarySection';
