@@ -42,13 +42,14 @@ export function OnboardingWizard() {
   const isLastStep = currentStep === STEPS.length - 1;
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden relative">
+    <div className="h-screen flex flex-col relative">
       <div className="mesh-gradient-bg" />
       <div className="noise-overlay" />
 
-      <div className="relative z-10 h-full flex flex-col items-center justify-center p-6">
+      <div className="relative z-10 flex-1 overflow-y-auto flex flex-col items-center p-6">
+        <div className="flex-1" />
         {/* Stepper */}
-        <div className="flex items-center gap-2 mb-8">
+        <div className="flex items-center gap-2 mb-8 flex-shrink-0">
           {STEPS.map((step, index) => (
             <div key={step.label} className="flex items-center gap-2">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[0.75rem] font-medium border transition-all ${
@@ -81,12 +82,12 @@ export function OnboardingWizard() {
         </div>
 
         {/* Step content */}
-        <div className="glass-panel w-full max-w-[700px] p-8 animate-fade-in">
+        <div className="glass-panel w-full max-w-[700px] p-8 animate-fade-in flex-shrink-0">
           <StepComponent onValidChange={setStepValid} />
         </div>
 
         {/* Navigation buttons */}
-        <div className="flex items-center gap-4 mt-6">
+        <div className="flex items-center gap-4 mt-6 flex-shrink-0">
           {currentStep > 0 && (
             <button onClick={handleBack} className="btn-glass">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -112,6 +113,7 @@ export function OnboardingWizard() {
             )}
           </button>
         </div>
+        <div className="flex-1" />
       </div>
     </div>
   );
