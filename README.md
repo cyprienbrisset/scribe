@@ -9,12 +9,12 @@
 </p>
 
 <p align="center">
-  <a href="#-fonctionnalités">Fonctionnalités</a> •
-  <a href="#-moteurs-de-transcription">Moteurs</a> •
-  <a href="#-installation">Installation</a> •
-  <a href="#-utilisation">Utilisation</a> •
-  <a href="#-paramètres">Paramètres</a> •
-  <a href="#-faq">FAQ</a>
+  <a href="#fonctionnalités">Fonctionnalités</a> •
+  <a href="#moteurs-de-transcription">Moteurs</a> •
+  <a href="#installation">Installation</a> •
+  <a href="#utilisation">Utilisation</a> •
+  <a href="#paramètres">Paramètres</a> •
+  <a href="#faq">FAQ</a>
 </p>
 
 <p align="center">
@@ -39,6 +39,9 @@
 | **Multi-moteurs** | Whisper, Vosk ou Parakeet selon vos besoins |
 | **Multilingue** | Support de 99 langues avec détection automatique |
 | **IA Intégrée** | Amélioration du texte via LLM (optionnel, Groq) |
+| **Commandes vocales** | Ponctuation, formatage, snippets et commandes système par la voix |
+| **Statistiques** | Suivi de productivité avec graphiques et distribution des langues |
+| **Intégrations** | Envoi vers Apple Notes et Obsidian en un clic |
 | **Cross-platform** | macOS, Windows et Linux |
 | **Gratuit** | Freeware, usage illimité |
 
@@ -126,6 +129,112 @@ Contrôlez la ponctuation et le formatage avec votre voix :
 | "Deux points" | : |
 | "Ouvrir les guillemets" | « |
 | "Fermer les guillemets" | » |
+
+---
+
+### Snippets vocaux
+
+<p align="center">
+  <img src="docs/screenshots/snippets-section.png" alt="Snippets vocaux" width="400" />
+</p>
+
+Créez des raccourcis vocaux pour insérer automatiquement du texte prédéfini :
+
+- **Dites "insère [déclencheur]"** pour insérer un snippet
+- Gérez vos snippets depuis les paramètres (nom, mot-déclencheur, contenu)
+- Idéal pour les signatures, adresses, formules types, numéros de téléphone
+
+```
+Exemple : "insère signature" → "Cordialement, Cyprien Brisset"
+```
+
+---
+
+### Commandes système & Formatage vocal
+
+<p align="center">
+  <img src="docs/screenshots/dictation-commands.png" alt="Commandes système" width="400" />
+</p>
+
+Contrôlez votre système et le formatage du texte par la voix :
+
+#### Commandes système
+
+| Commande vocale | Action |
+|-----------------|--------|
+| "Commande screenshot" | Capture d'écran |
+| "Commande verrouille" | Verrouiller l'écran |
+| "Commande ne pas déranger" | Activer/désactiver Ne pas déranger |
+| "Volume à 50" | Régler le volume à 50% |
+
+#### Formatage
+
+| Commande vocale | Action |
+|-----------------|--------|
+| "Mets en gras" | Applique le gras (⌘+B) |
+| "En italique" | Applique l'italique (⌘+I) |
+| "Commande souligne" | Applique le souligné (⌘+U) |
+
+> **Note** : Les commandes système sont activables/désactivables dans les paramètres.
+
+---
+
+### Statistiques d'utilisation
+
+<p align="center">
+  <img src="docs/screenshots/statistics-panel.png" alt="Statistiques" width="400" />
+</p>
+
+Suivez votre productivité vocale en temps réel :
+
+- **Total de mots dictés** et nombre de transcriptions
+- **Temps total** d'utilisation et estimation du temps gagné
+- **Graphique des 7 derniers jours** avec nombre de mots par jour
+- **Distribution des langues** utilisées
+- Bouton de réinitialisation des statistiques
+
+---
+
+### Drag & Drop de fichiers audio
+
+Glissez-déposez directement vos fichiers audio dans la fenêtre de WakaScribe :
+
+- Un overlay visuel apparaît pour indiquer la zone de dépôt
+- Les fichiers sont automatiquement ajoutés à l'onglet Fichiers
+- Formats supportés : WAV, MP3, M4A, FLAC, OGG, WebM
+
+---
+
+### Sous-titres en direct
+
+Affichez le texte de votre dictée en temps réel dans une fenêtre flottante :
+
+- **Fenêtre transparente** toujours au premier plan
+- Déplaçable par glisser-déposer
+- Auto-disparition après 5 secondes d'inactivité
+- Activable depuis les paramètres ou le menu de la barre système
+- Taille de police configurable
+
+---
+
+### Intégrations Notes
+
+<p align="center">
+  <img src="docs/screenshots/integrations-section.png" alt="Intégrations" width="400" />
+</p>
+
+Envoyez vos transcriptions directement vers vos applications de notes :
+
+#### Apple Notes (macOS uniquement)
+- Crée automatiquement une nouvelle note avec le contenu transcrit
+- Activable dans Paramètres → Intégrations
+
+#### Obsidian
+- Crée un fichier Markdown dans votre vault Obsidian
+- Sélectionnez le chemin de votre vault dans les paramètres
+- Fonctionne sur macOS, Windows et Linux
+
+> Bouton **"Envoyer vers..."** disponible dans l'historique et la transcription de fichiers.
 
 ---
 
@@ -257,27 +366,24 @@ WakaScribe propose trois moteurs de transcription :
 
 ## Utilisation
 
-### Premier lancement
+### Premier lancement — Assistant d'accueil
 
-#### Étape 1 : Choisir un moteur
+<p align="center">
+  <img src="docs/screenshots/onboarding-welcome.png" alt="Assistant d'accueil" width="500" />
+</p>
 
-Sélectionnez le moteur de transcription adapté à votre configuration :
+Au premier lancement, un assistant vous guide en 5 étapes :
 
-- **Mac M1/M2/M3/M4** : Parakeet CoreML (recommandé)
+1. **Bienvenue** — Présentation de WakaScribe
+2. **Microphone** — Demande de permission d'accès au micro
+3. **Modèle** — Choix et téléchargement du moteur de transcription
+4. **Langue** — Sélection de la langue de dictée
+5. **Raccourcis** — Configuration des raccourcis clavier
+
+L'assistant recommande automatiquement le meilleur moteur pour votre configuration :
+- **Mac M1/M2/M3/M4** : Parakeet CoreML
 - **Mac Intel / Windows / Linux** : Whisper Small
 - **Machine peu puissante** : Vosk
-
-#### Étape 2 : Télécharger le modèle
-
-Le premier téléchargement peut prendre quelques minutes selon votre connexion.
-
-#### Étape 3 : Configurer le microphone
-
-Si vous avez plusieurs microphones, sélectionnez celui que vous souhaitez utiliser dans les paramètres.
-
-#### Étape 4 : Tester la dictée
-
-Cliquez sur le bouton micro central et parlez !
 
 ---
 
@@ -340,6 +446,36 @@ Accédez aux paramètres via le bouton ⚙️ ou `⌘+,`
 3. Allez dans **API Keys**
 4. Cliquez sur **Create API Key**
 5. Copiez la clé et collez-la dans WakaScribe
+
+### Dictée
+
+| Paramètre | Description |
+|-----------|-------------|
+| **Commandes vocales** | Ponctuation et édition par la voix |
+| **Commandes système** | Volume, screenshot, verrouillage par la voix |
+| **Sous-titres en direct** | Fenêtre flottante avec texte temps réel |
+
+### Snippets vocaux
+
+| Paramètre | Description |
+|-----------|-------------|
+| **Nom** | Nom descriptif du snippet |
+| **Déclencheur** | Mot-clé pour l'insertion vocale |
+| **Contenu** | Texte à insérer automatiquement |
+
+### Statistiques
+
+| Paramètre | Description |
+|-----------|-------------|
+| **Suivi activé** | Active/désactive le suivi de productivité |
+| **Réinitialiser** | Remet les compteurs à zéro |
+
+### Intégrations
+
+| Paramètre | Description |
+|-----------|-------------|
+| **Apple Notes** | Envoyer les transcriptions vers Notes (macOS) |
+| **Obsidian** | Envoyer vers un vault Obsidian + chemin du vault |
 
 ### Raccourcis
 

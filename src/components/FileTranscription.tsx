@@ -8,6 +8,7 @@ import { useSettingsStore } from '../stores/settingsStore';
 interface FileTranscriptionProps {
   isOpen: boolean;
   onClose: () => void;
+  initialFiles?: string[];
 }
 
 interface SummaryState {
@@ -18,7 +19,7 @@ interface SummaryState {
   };
 }
 
-export function FileTranscription({ isOpen }: FileTranscriptionProps) {
+export function FileTranscription({ isOpen, initialFiles }: FileTranscriptionProps) {
   const [files, setFiles] = useState<string[]>([]);
   const [results, setResults] = useState<FileTranscriptionResult[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -49,6 +50,18 @@ export function FileTranscription({ isOpen }: FileTranscriptionProps) {
       unlistenProgress.then(fn => fn());
     };
   }, []);
+
+  // Handle files from drag & drop
+  useEffect(() => {
+    if (initialFiles && initialFiles.length > 0) {
+      setFiles(prev => {
+        const existingSet = new Set(prev);
+        const newFiles = initialFiles.filter(f => !existingSet.has(f));
+        return newFiles.length > 0 ? [...prev, ...newFiles] : prev;
+      });
+      setResults([]);
+    }
+  }, [initialFiles]);
 
   const handleSelectFiles = useCallback(async () => {
     try {
@@ -121,6 +134,19 @@ export function FileTranscription({ isOpen }: FileTranscriptionProps) {
 
   const handleCopySummary = useCallback((text: string) => {
     navigator.clipboard.writeText(text);
+  }, []);
+
+  const handleSendTo = useCallback(async (target: 'apple_notes' | 'obsidian', text: string, fileName: string) => {
+    const title = `Transcription - ${fileName}`;
+    try {
+      if (target === 'apple_notes') {
+        await invoke('send_to_apple_notes', { title, body: text });
+      } else {
+        await invoke('send_to_obsidian', { title, body: text });
+      }
+    } catch (e) {
+      console.error(`Failed to send to ${target}:`, e);
+    }
   }, []);
 
   if (!isOpen) return null;
@@ -347,6 +373,36 @@ export function FileTranscription({ isOpen }: FileTranscriptionProps) {
                           </svg>
                           Copier
                         </button>
+                        {(settings?.integrations?.apple_notes_enabled || settings?.integrations?.obsidian_enabled) && (
+                          <div className="relative group">
+                            <button className="btn-glass text-[0.75rem] py-1.5 px-3">
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                                <polyline points="16 6 12 2 8 6" />
+                                <line x1="12" y1="2" x2="12" y2="15" />
+                              </svg>
+                              Envoyer
+                            </button>
+                            <div className="absolute top-full right-0 mt-1 py-1 min-w-[140px] bg-[var(--glass-bg)] backdrop-blur-xl border border-[var(--glass-border)] rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+                              {settings?.integrations?.apple_notes_enabled && (
+                                <button
+                                  onClick={() => handleSendTo('apple_notes', result.transcription!.text, result.file_name)}
+                                  className="w-full px-3 py-2 text-left text-[0.75rem] text-[var(--text-secondary)] hover:bg-[rgba(255,255,255,0.08)]"
+                                >
+                                  Apple Notes
+                                </button>
+                              )}
+                              {settings?.integrations?.obsidian_enabled && (
+                                <button
+                                  onClick={() => handleSendTo('obsidian', result.transcription!.text, result.file_name)}
+                                  className="w-full px-3 py-2 text-left text-[0.75rem] text-[var(--text-secondary)] hover:bg-[rgba(255,255,255,0.08)]"
+                                >
+                                  Obsidian
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

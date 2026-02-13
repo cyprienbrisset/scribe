@@ -31,6 +31,19 @@
         "visible": false,
         "resizable": true,
         "skipTaskbar": true
+      },
+      {
+        "label": "subtitles",
+        "title": "Subtitles",
+        "url": "/subtitles.html",
+        "width": 800,
+        "height": 120,
+        "decorations": false,
+        "alwaysOnTop": true,
+        "transparent": true,
+        "visible": false,
+        "resizable": true,
+        "skipTaskbar": true
       }
     ],
     "security": {

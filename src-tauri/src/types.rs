@@ -352,6 +352,16 @@ pub struct AppSettings {
     pub onboarding_completed: bool,
     #[serde(default)]
     pub tour_completed: bool,
+    #[serde(default)]
+    pub system_commands_enabled: bool,
+    #[serde(default)]
+    pub subtitles_enabled: bool,
+    #[serde(default = "default_subtitles_font_size")]
+    pub subtitles_font_size: u32,
+    #[serde(default = "default_true")]
+    pub stats_tracking_enabled: bool,
+    #[serde(default)]
+    pub integrations: IntegrationConfig,
 }
 
 fn default_true() -> bool {
@@ -368,6 +378,10 @@ fn default_hotkey_translate() -> String {
 
 fn default_hotkey_voice_action() -> String {
     "Control+Alt+A".to_string()
+}
+
+fn default_subtitles_font_size() -> u32 {
+    20
 }
 
 impl Default for AppSettings {
@@ -403,6 +417,11 @@ impl Default for AppSettings {
             local_llm_model: LocalLlmModel::default(),
             onboarding_completed: false,
             tour_completed: false,
+            system_commands_enabled: false,
+            subtitles_enabled: false,
+            subtitles_font_size: 20,
+            stats_tracking_enabled: true,
+            integrations: IntegrationConfig::default(),
         }
     }
 }
@@ -422,4 +441,43 @@ pub struct DictionaryData {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct HistoryData {
     pub transcriptions: Vec<TranscriptionResult>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Snippet {
+    pub id: String,
+    pub name: String,
+    pub trigger: String,
+    pub content: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct SnippetsData {
+    pub snippets: Vec<Snippet>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct DailyStats {
+    pub words: u64,
+    pub transcriptions: u32,
+    pub duration_secs: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct UsageStats {
+    pub total_words: u64,
+    pub total_transcriptions: u64,
+    pub total_duration_secs: f64,
+    pub daily_stats: std::collections::HashMap<String, DailyStats>,
+    pub languages_used: std::collections::HashMap<String, u32>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct IntegrationConfig {
+    #[serde(default)]
+    pub apple_notes_enabled: bool,
+    #[serde(default)]
+    pub obsidian_enabled: bool,
+    #[serde(default)]
+    pub obsidian_vault_path: Option<String>,
 }

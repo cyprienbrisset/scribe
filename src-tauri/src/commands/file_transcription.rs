@@ -103,6 +103,19 @@ pub async fn transcribe_files(
                     log::warn!("Failed to save transcription to history: {}", e);
                 }
 
+                // Record stats
+                {
+                    let settings = state.settings.read().map_err(|e| e.to_string())?;
+                    if settings.stats_tracking_enabled {
+                        let word_count = result.text.split_whitespace().count() as u64;
+                        let _ = crate::storage::stats::record_transcription(
+                            word_count,
+                            result.duration_seconds as f64,
+                            result.detected_language.as_deref(),
+                        );
+                    }
+                }
+
                 results.push(FileTranscriptionResult {
                     file_path: path_str.clone(),
                     file_name,

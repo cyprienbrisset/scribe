@@ -366,13 +366,14 @@ pub async fn stop_recording(app: AppHandle, state: State<'_, AppState>) -> Resul
     };
 
     // Lire les settings pour le post-processing
-    let (voice_commands_enabled, dictation_mode, llm_enabled, llm_mode) = {
+    let (voice_commands_enabled, dictation_mode, llm_enabled, llm_mode, system_commands_enabled) = {
         let settings = state.settings.read().map_err(|e| e.to_string())?;
         (
             settings.voice_commands_enabled,
             settings.dictation_mode,
             settings.llm_enabled,
             settings.llm_mode,
+            settings.system_commands_enabled,
         )
     };
 
@@ -381,11 +382,12 @@ pub async fn stop_recording(app: AppHandle, state: State<'_, AppState>) -> Resul
 
     // Voice commands
     if voice_commands_enabled {
-        let parse_result = voice_commands::parse(&final_text, dictation_mode);
+        let snippets = crate::storage::snippets::load_snippets().snippets;
+        let parse_result = voice_commands::parse(&final_text, dictation_mode, &snippets, system_commands_enabled);
         final_text = parse_result.text;
         if !parse_result.actions.is_empty() {
             log::info!("Voice commands detected: {:?}", parse_result.actions);
-            voice_commands::execute_actions(&parse_result.actions);
+            voice_commands::execute_actions(&parse_result.actions, &snippets);
         }
     }
 
@@ -428,6 +430,16 @@ pub async fn stop_recording(app: AppHandle, state: State<'_, AppState>) -> Resul
     emit_recording_status(&app, "idle");
 
     history::add_transcription(final_result.clone())?;
+
+    // Record stats
+    if state.settings.read().map(|s| s.stats_tracking_enabled).unwrap_or(true) {
+        let word_count = final_result.text.split_whitespace().count() as u64;
+        let _ = crate::storage::stats::record_transcription(
+            word_count,
+            duration_seconds as f64,
+            final_result.detected_language.as_deref(),
+        );
+    }
 
     log::info!("Recording stopped, duration: {:.1}s", duration_seconds);
     Ok(final_result)

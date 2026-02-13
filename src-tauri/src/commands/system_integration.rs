@@ -257,3 +257,45 @@ pub fn set_floating_window_position(app: AppHandle, x: i32, y: i32) -> Result<()
         .set_position(tauri::Position::Physical(tauri::PhysicalPosition { x, y }))
         .map_err(|e| e.to_string())
 }
+
+// ============================================================================
+// Subtitles Window Management
+// ============================================================================
+
+/// Gets the subtitles window handle
+fn get_subtitles_window(app: &AppHandle) -> Result<WebviewWindow, String> {
+    app.get_webview_window("subtitles")
+        .ok_or_else(|| "Subtitles window not found".to_string())
+}
+
+/// Shows the subtitles window
+#[tauri::command]
+pub fn show_subtitles_window(app: AppHandle) -> Result<(), String> {
+    let window = get_subtitles_window(&app)?;
+    window.show().map_err(|e| e.to_string())?;
+    window.set_focus().map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+/// Hides the subtitles window
+#[tauri::command]
+pub fn hide_subtitles_window(app: AppHandle) -> Result<(), String> {
+    let window = get_subtitles_window(&app)?;
+    window.hide().map_err(|e| e.to_string())
+}
+
+/// Toggles the subtitles window visibility
+#[tauri::command]
+pub fn toggle_subtitles(app: AppHandle) -> Result<bool, String> {
+    let window = get_subtitles_window(&app)?;
+    let is_visible = window.is_visible().map_err(|e| e.to_string())?;
+
+    if is_visible {
+        window.hide().map_err(|e| e.to_string())?;
+        Ok(false)
+    } else {
+        window.show().map_err(|e| e.to_string())?;
+        window.set_focus().map_err(|e| e.to_string())?;
+        Ok(true)
+    }
+}

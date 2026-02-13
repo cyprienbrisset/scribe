@@ -8,3 +8,5 @@ export { OptionsSection } from './OptionsSection';
 export { SystemSection } from './SystemSection';
 export { ShortcutsSection } from './ShortcutsSection';
 export { DictionarySection } from './DictionarySection';
+export { SnippetsSection } from './SnippetsSection';
+export { IntegrationsSection } from './IntegrationsSection';

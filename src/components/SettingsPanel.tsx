@@ -11,7 +11,10 @@ import {
   SystemSection,
   ShortcutsSection,
   DictionarySection,
+  SnippetsSection,
+  IntegrationsSection,
 } from './settings';
+import { StatisticsPanel } from './StatisticsPanel';
 import logoSvg from '../assets/logo.svg';
 
 interface SettingsPanelProps {
@@ -77,8 +80,11 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
           <TranscriptionSection settings={settings} updateSettings={updateSettings} />
           <OptionsSection settings={settings} updateSettings={updateSettings} />
           <SystemSection settings={settings} updateSettings={updateSettings} />
+          <StatisticsPanel />
+          <IntegrationsSection settings={settings} updateSettings={updateSettings} />
           <ShortcutsSection settings={settings} updateSettings={updateSettings} />
           <DictionarySection dictionary={dictionary} addWord={addWord} removeWord={removeWord} />
+          <SnippetsSection />
         </div>
 
         {/* Footer */}

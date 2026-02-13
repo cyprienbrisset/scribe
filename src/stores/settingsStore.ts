@@ -46,6 +46,15 @@ const defaultSettings: AppSettings = {
   hotkey_voice_action: 'Control+Alt+A',
   onboarding_completed: false,
   tour_completed: false,
+  system_commands_enabled: false,
+  subtitles_enabled: false,
+  subtitles_font_size: 20,
+  stats_tracking_enabled: true,
+  integrations: {
+    apple_notes_enabled: false,
+    obsidian_enabled: false,
+    obsidian_vault_path: null,
+  },
 };
 
 export const useSettingsStore = create<SettingsStore>((set, get) => ({

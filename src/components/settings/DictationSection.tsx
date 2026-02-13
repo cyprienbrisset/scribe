@@ -39,6 +39,33 @@ export function DictationSection({ settings, updateSettings }: DictationSectionP
           <span className="check-box" />
           <span className="check-label">Commandes vocales activees</span>
         </label>
+
+        <label className="checkbox-frost">
+          <input
+            type="checkbox"
+            checked={settings.system_commands_enabled}
+            onChange={(e) => updateSettings({ system_commands_enabled: e.target.checked })}
+          />
+          <span className="check-box" />
+          <span className="check-label">Commandes systeme (volume, screenshot...)</span>
+        </label>
+
+        <label className="checkbox-frost">
+          <input
+            type="checkbox"
+            checked={settings.subtitles_enabled}
+            onChange={(e) => {
+              updateSettings({ subtitles_enabled: e.target.checked });
+              if (e.target.checked) {
+                import('@tauri-apps/api/core').then(({ invoke }) => invoke('show_subtitles_window').catch(console.error));
+              } else {
+                import('@tauri-apps/api/core').then(({ invoke }) => invoke('hide_subtitles_window').catch(console.error));
+              }
+            }}
+          />
+          <span className="check-box" />
+          <span className="check-label">Sous-titres en direct</span>
+        </label>
       </div>
     </section>
   );

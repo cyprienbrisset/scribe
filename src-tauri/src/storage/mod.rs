@@ -1,6 +1,8 @@
 pub mod config;
 pub mod dictionary;
 pub mod history;
+pub mod snippets;
+pub mod stats;
 
 use std::path::PathBuf;
 

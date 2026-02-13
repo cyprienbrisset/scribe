@@ -55,6 +55,19 @@ export function TranscriptionHistory() {
     navigator.clipboard.writeText(text);
   }, []);
 
+  const handleSendTo = useCallback(async (target: 'apple_notes' | 'obsidian', text: string, timestamp: number) => {
+    const title = `Transcription ${new Date(timestamp * 1000).toLocaleDateString('fr-FR')}`;
+    try {
+      if (target === 'apple_notes') {
+        await invoke('send_to_apple_notes', { title, body: text });
+      } else {
+        await invoke('send_to_obsidian', { title, body: text });
+      }
+    } catch (e) {
+      console.error(`Failed to send to ${target}:`, e);
+    }
+  }, []);
+
   const formatDate = (timestamp: number) => {
     return new Date(timestamp * 1000).toLocaleString('fr-FR', {
       day: '2-digit',
@@ -181,6 +194,35 @@ export function TranscriptionHistory() {
                   <span className="text-[0.65rem] text-[var(--text-muted)] opacity-70 tabular-nums">
                     ⚡ {item.processing_time_ms}ms
                   </span>
+                )}
+                {(settings?.integrations?.apple_notes_enabled || settings?.integrations?.obsidian_enabled) && (
+                  <div className="relative group">
+                    <button className="btn-glass text-[0.7rem] py-1 px-2">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                        <polyline points="16 6 12 2 8 6" />
+                        <line x1="12" y1="2" x2="12" y2="15" />
+                      </svg>
+                    </button>
+                    <div className="absolute top-full right-0 mt-1 py-1 min-w-[140px] bg-[var(--glass-bg)] backdrop-blur-xl border border-[var(--glass-border)] rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+                      {settings?.integrations?.apple_notes_enabled && (
+                        <button
+                          onClick={() => handleSendTo('apple_notes', item.text, item.timestamp)}
+                          className="w-full px-3 py-1.5 text-left text-[0.7rem] text-[var(--text-secondary)] hover:bg-[rgba(255,255,255,0.08)]"
+                        >
+                          Apple Notes
+                        </button>
+                      )}
+                      {settings?.integrations?.obsidian_enabled && (
+                        <button
+                          onClick={() => handleSendTo('obsidian', item.text, item.timestamp)}
+                          className="w-full px-3 py-1.5 text-left text-[0.7rem] text-[var(--text-secondary)] hover:bg-[rgba(255,255,255,0.08)]"
+                        >
+                          Obsidian
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 )}
               </div>
             </div>

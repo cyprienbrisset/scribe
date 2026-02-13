@@ -88,8 +88,19 @@ pub fn run() {
             commands::set_floating_window_size,
             commands::get_floating_window_position,
             commands::set_floating_window_position,
+            commands::show_subtitles_window,
+            commands::hide_subtitles_window,
+            commands::toggle_subtitles,
             commands::file_transcription::transcribe_files,
             commands::file_transcription::get_supported_audio_formats,
+            commands::get_snippets,
+            commands::add_snippet,
+            commands::update_snippet,
+            commands::remove_snippet,
+            commands::get_usage_stats,
+            commands::reset_stats,
+            commands::send_to_apple_notes,
+            commands::send_to_obsidian,
         ])
         .setup(|app| {
             // Initialiser l'état

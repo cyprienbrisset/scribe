@@ -33,6 +33,8 @@ function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [groqQuota, setGroqQuota] = useState<GroqQuota | null>(null);
   const [appStatus, setAppStatus] = useState<AppStatus>('idle');
+  const [droppedFiles, setDroppedFiles] = useState<string[]>([]);
+  const [isDragOver, setIsDragOver] = useState(false);
   const { settings, loadSettings } = useSettingsStore();
   const { initialize } = useTranscriptionStore();
 
@@ -73,6 +75,47 @@ function App() {
       unlisteners.forEach(unlisten => unlisten());
     };
   }, []);
+
+  // Drag & drop handling
+  useEffect(() => {
+    const unlisteners: Array<() => void> = [];
+
+    listen('tauri://drag-drop', (event: any) => {
+      const paths = event.payload?.paths as string[];
+      if (paths?.length) {
+        // Filter to only audio files
+        const audioExtensions = ['wav', 'mp3', 'm4a', 'flac', 'ogg', 'webm', 'aac', 'wma'];
+        const audioPaths = paths.filter(p => {
+          const ext = p.split('.').pop()?.toLowerCase() || '';
+          return audioExtensions.includes(ext);
+        });
+        if (audioPaths.length > 0) {
+          setDroppedFiles(audioPaths);
+          setActiveTab('files');
+        }
+      }
+      setIsDragOver(false);
+    }).then(unlisten => unlisteners.push(unlisten));
+
+    listen('tauri://drag-over', () => {
+      setIsDragOver(true);
+    }).then(unlisten => unlisteners.push(unlisten));
+
+    listen('tauri://drag-leave', () => {
+      setIsDragOver(false);
+    }).then(unlisten => unlisteners.push(unlisten));
+
+    return () => {
+      unlisteners.forEach(unlisten => unlisten());
+    };
+  }, []);
+
+  // Clear dropped files once tab changes away from files
+  useEffect(() => {
+    if (activeTab !== 'files' && droppedFiles.length > 0) {
+      setDroppedFiles([]);
+    }
+  }, [activeTab, droppedFiles.length]);
 
   const fetchGroqQuota = useCallback(async () => {
     if (settings?.llm_enabled) {
@@ -243,7 +286,7 @@ function App() {
           <div className="glass-panel h-full overflow-hidden">
             {activeTab === 'dictation' && <DictationPanel />}
             {activeTab === 'history' && <TranscriptionHistory />}
-            {activeTab === 'files' && <FileTranscription isOpen={true} onClose={() => setActiveTab('dictation')} />}
+            {activeTab === 'files' && <FileTranscription isOpen={true} onClose={() => setActiveTab('dictation')} initialFiles={droppedFiles} />}
           </div>
         </main>
 
@@ -326,6 +369,23 @@ function App() {
           </div>
         </footer>
       </div>
+
+      {/* Drag & Drop overlay */}
+      {isDragOver && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-[rgba(0,0,0,0.6)] backdrop-blur-sm">
+          <div className="p-12 rounded-3xl border-2 border-dashed border-[var(--accent-primary)] bg-[rgba(139,92,246,0.1)]">
+            <div className="text-center">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" strokeWidth="1.5" className="mx-auto mb-4">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+              <p className="text-lg font-medium text-[var(--text-primary)]">Deposez vos fichiers audio ici</p>
+              <p className="text-sm text-[var(--text-muted)] mt-2">WAV, MP3, M4A, FLAC, OGG, WEBM</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Settings Panel */}
       <SettingsPanel isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />

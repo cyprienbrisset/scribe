@@ -84,6 +84,11 @@ export interface AppSettings {
   hotkey_voice_action: string;
   onboarding_completed: boolean;
   tour_completed: boolean;
+  system_commands_enabled: boolean;
+  subtitles_enabled: boolean;
+  subtitles_font_size: number;
+  stats_tracking_enabled: boolean;
+  integrations: IntegrationConfig;
 }
 
 export interface VoskModelInfo {
@@ -104,6 +109,33 @@ export interface FileTranscriptionProgress {
   total: number;
   file_name: string;
   status: string;
+}
+
+export interface Snippet {
+  id: string;
+  name: string;
+  trigger: string;
+  content: string;
+}
+
+export interface DailyStats {
+  words: number;
+  transcriptions: number;
+  duration_secs: number;
+}
+
+export interface UsageStats {
+  total_words: number;
+  total_transcriptions: number;
+  total_duration_secs: number;
+  daily_stats: Record<string, DailyStats>;
+  languages_used: Record<string, number>;
+}
+
+export interface IntegrationConfig {
+  apple_notes_enabled: boolean;
+  obsidian_enabled: boolean;
+  obsidian_vault_path: string | null;
 }
 
 export interface AudioDevice {

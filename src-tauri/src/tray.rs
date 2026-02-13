@@ -100,6 +100,7 @@ fn create_tray_menu(app: &tauri::App) -> Result<Menu<tauri::Wry>, tauri::Error> 
     let paste_last = MenuItem::with_id(app, "paste_last", "Coller dernière transcription", true, Some("Option+Cmd+V"))?;
     let last_transcript = MenuItem::with_id(app, "last_transcript_preview", "Aucune transcription", false, None::<&str>)?;
     let shortcuts = MenuItem::with_id(app, "shortcuts", "Raccourcis clavier", true, None::<&str>)?;
+    let subtitles = MenuItem::with_id(app, "subtitles", "Sous-titres en direct", true, None::<&str>)?;
 
     let mic_default = MenuItem::with_id(app, "mic_default", "Microphone par défaut", true, None::<&str>)?;
     let mic_submenu = Submenu::with_items(app, "Microphone", true, &[&mic_default])?;
@@ -125,7 +126,7 @@ fn create_tray_menu(app: &tauri::App) -> Result<Menu<tauri::Wry>, tauri::Error> 
         &PredefinedMenuItem::separator(app)?,
         &paste_last, &last_transcript,
         &PredefinedMenuItem::separator(app)?,
-        &shortcuts, &mic_submenu, &lang_submenu,
+        &shortcuts, &subtitles, &mic_submenu, &lang_submenu,
         &PredefinedMenuItem::separator(app)?,
         &help, &feedback,
         &PredefinedMenuItem::separator(app)?,
@@ -157,6 +158,18 @@ fn handle_tray_menu_event(app: &tauri::AppHandle, menu_id: &str) {
                 let _ = window.show();
                 let _ = window.set_focus();
                 let _ = window.emit("navigate", "/settings/shortcuts");
+            }
+        }
+        "subtitles" => {
+            log::info!("Subtitles toggled from tray");
+            if let Some(window) = app.get_webview_window("subtitles") {
+                let is_visible = window.is_visible().unwrap_or(false);
+                if is_visible {
+                    let _ = window.hide();
+                } else {
+                    let _ = window.show();
+                    let _ = window.set_focus();
+                }
             }
         }
         "help" => {
