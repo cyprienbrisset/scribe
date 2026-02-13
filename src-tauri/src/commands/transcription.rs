@@ -385,6 +385,7 @@ pub async fn stop_recording(app: AppHandle, state: State<'_, AppState>) -> Resul
         final_text = parse_result.text;
         if !parse_result.actions.is_empty() {
             log::info!("Voice commands detected: {:?}", parse_result.actions);
+            voice_commands::execute_actions(&parse_result.actions);
         }
     }
 

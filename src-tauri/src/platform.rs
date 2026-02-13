@@ -1,5 +1,70 @@
 use std::process::{Command, Stdio};
 
+/// Ouvre une application par son nom
+pub fn open_app(app_name: &str) {
+    log::info!("[OPEN_APP] Opening application: {}", app_name);
+
+    #[cfg(target_os = "macos")]
+    {
+        match Command::new("open")
+            .args(["-a", app_name])
+            .output()
+        {
+            Ok(output) => {
+                if output.status.success() {
+                    log::info!("[OPEN_APP] Successfully opened {}", app_name);
+                } else {
+                    let stderr = String::from_utf8_lossy(&output.stderr);
+                    log::warn!("[OPEN_APP] Failed to open {}: {}", app_name, stderr);
+                }
+            }
+            Err(e) => {
+                log::error!("[OPEN_APP] Failed to execute open command: {}", e);
+            }
+        }
+    }
+
+    #[cfg(target_os = "windows")]
+    {
+        match Command::new("cmd")
+            .args(["/C", "start", "", app_name])
+            .output()
+        {
+            Ok(output) => {
+                if output.status.success() {
+                    log::info!("[OPEN_APP] Successfully opened {}", app_name);
+                } else {
+                    let stderr = String::from_utf8_lossy(&output.stderr);
+                    log::warn!("[OPEN_APP] Failed to open {}: {}", app_name, stderr);
+                }
+            }
+            Err(e) => {
+                log::error!("[OPEN_APP] Failed to execute start command: {}", e);
+            }
+        }
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        match Command::new("xdg-open")
+            .arg(app_name)
+            .output()
+        {
+            Ok(output) => {
+                if output.status.success() {
+                    log::info!("[OPEN_APP] Successfully opened {}", app_name);
+                } else {
+                    let stderr = String::from_utf8_lossy(&output.stderr);
+                    log::warn!("[OPEN_APP] Failed to open {}: {}", app_name, stderr);
+                }
+            }
+            Err(e) => {
+                log::error!("[OPEN_APP] Failed to execute xdg-open: {}", e);
+            }
+        }
+    }
+}
+
 /// Tape du texte en utilisant le presse-papier (pour le streaming incrémental)
 pub fn type_text_incremental(text: &str) {
     use std::io::Write;

@@ -32,6 +32,8 @@ pub enum Action {
     InsertBullet,
     /// Insert title/heading (Notes mode)
     InsertTitle,
+    /// Open an application by name
+    OpenApp(String),
 }
 
 /// Result of parsing voice commands from text
@@ -77,6 +79,16 @@ const PUNCTUATION_COMMANDS: &[PunctuationMapping] = &[
     PunctuationMapping { command: "à la ligne", replacement: "\n", spacing: SpacingRule::Newline },
     PunctuationMapping { command: "virgule", replacement: ",", spacing: SpacingRule::CloseWithSpace },
     PunctuationMapping { command: "point", replacement: ".", spacing: SpacingRule::CloseWithSpace },
+];
+
+/// Trigger words for opening apps (French, imperative forms only to avoid
+/// conflicts with punctuation commands like "ouvrir parenthèse")
+const APP_TRIGGERS: &[&str] = &[
+    "ouvre",
+    "lance",
+    "mets",
+    "démarre",
+    "demarre",
 ];
 
 /// Edit command mappings (prefixed with "commande")
@@ -144,6 +156,9 @@ pub fn parse(text: &str, mode: DictationMode) -> ParseResult {
         result_text = extract_command(&result_text, command, action, &mut actions);
     }
 
+    // Extract app open commands ("ouvre Safari", "lance Spotify", etc.)
+    result_text = extract_app_commands(&result_text, &mut actions);
+
     // Replace punctuation commands (case-insensitive)
     for mapping in PUNCTUATION_COMMANDS {
         result_text = replace_punctuation_command(&result_text, mapping);
@@ -156,6 +171,39 @@ pub fn parse(text: &str, mode: DictationMode) -> ParseResult {
         text: result_text,
         actions,
     }
+}
+
+/// Extract app open commands from text (e.g. "ouvre Safari", "lance Spotify")
+/// Takes only the first word after the trigger as the app name.
+/// Matches on word boundaries to avoid matching inside longer words (e.g. "ouvre" inside "ouvrir").
+fn extract_app_commands(text: &str, actions: &mut Vec<Action>) -> String {
+    let words: Vec<&str> = text.split_whitespace().collect();
+    let words_lower: Vec<String> = words.iter().map(|w| w.to_lowercase()).collect();
+
+    for trigger in APP_TRIGGERS {
+        let trigger_lower = trigger.to_lowercase();
+        for (i, word) in words_lower.iter().enumerate() {
+            if *word == trigger_lower {
+                // Found the trigger as a whole word; next word is the app name
+                if i + 1 >= words.len() {
+                    continue;
+                }
+                let app_name = words[i + 1];
+                actions.push(Action::OpenApp(app_name.to_string()));
+
+                // Rebuild text without trigger and app name
+                let mut parts: Vec<&str> = Vec::new();
+                for (j, w) in words.iter().enumerate() {
+                    if j != i && j != i + 1 {
+                        parts.push(w);
+                    }
+                }
+                return parts.join(" ");
+            }
+        }
+    }
+
+    text.to_string()
 }
 
 /// Extract a command from text and add its action to the actions vector
@@ -473,6 +521,56 @@ mod tests {
     fn test_no_commands() {
         let result = parse("Texte normal sans commandes", DictationMode::General);
         assert_eq!(result.text, "Texte normal sans commandes");
+        assert!(result.actions.is_empty());
+    }
+
+    // App open command tests
+
+    #[test]
+    fn test_open_app_ouvre() {
+        let result = parse("ouvre Safari", DictationMode::General);
+        assert_eq!(result.text, "");
+        assert_eq!(result.actions, vec![Action::OpenApp("Safari".to_string())]);
+    }
+
+    #[test]
+    fn test_open_app_lance() {
+        let result = parse("lance Spotify", DictationMode::General);
+        assert_eq!(result.text, "");
+        assert_eq!(result.actions, vec![Action::OpenApp("Spotify".to_string())]);
+    }
+
+    #[test]
+    fn test_open_app_mets() {
+        let result = parse("mets Spotify", DictationMode::General);
+        assert_eq!(result.text, "");
+        assert_eq!(result.actions, vec![Action::OpenApp("Spotify".to_string())]);
+    }
+
+    #[test]
+    fn test_open_app_with_surrounding_text() {
+        let result = parse("je veux ouvre Safari merci", DictationMode::General);
+        assert_eq!(result.text, "je veux merci");
+        assert_eq!(result.actions, vec![Action::OpenApp("Safari".to_string())]);
+    }
+
+    #[test]
+    fn test_open_app_case_insensitive() {
+        let result = parse("Ouvre safari", DictationMode::General);
+        assert_eq!(result.actions, vec![Action::OpenApp("safari".to_string())]);
+    }
+
+    #[test]
+    fn test_open_app_demarre() {
+        let result = parse("démarre Firefox", DictationMode::General);
+        assert_eq!(result.text, "");
+        assert_eq!(result.actions, vec![Action::OpenApp("Firefox".to_string())]);
+    }
+
+    #[test]
+    fn test_open_app_trigger_alone_no_crash() {
+        let result = parse("ouvre", DictationMode::General);
+        assert_eq!(result.text, "ouvre");
         assert!(result.actions.is_empty());
     }
 }
