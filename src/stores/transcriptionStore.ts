@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { invoke } from '@tauri-apps/api/core';
 import { TranscriptionResult, TranscriptionStatus } from '../types';
+import { playStartSound, playStopSound } from '../utils/sounds';
 
 interface TranscriptionStore {
   status: TranscriptionStatus;
@@ -29,6 +30,7 @@ export const useTranscriptionStore = create<TranscriptionStore>((set) => ({
   startRecording: async () => {
     try {
       set({ status: 'recording', error: null });
+      playStartSound();
       await invoke('start_recording');
     } catch (error) {
       const errorStr = String(error);
@@ -48,6 +50,7 @@ export const useTranscriptionStore = create<TranscriptionStore>((set) => ({
   stopRecording: async () => {
     try {
       set({ status: 'processing' });
+      playStopSound();
       const result = await invoke<TranscriptionResult>('stop_recording');
       set((state) => ({
         status: 'completed',

@@ -10,6 +10,7 @@ import { useTranscriptionStore } from './stores/transcriptionStore';
 import { useHotkeys } from './hooks/useHotkeys';
 import { GroqQuota } from './types';
 import logoSvg from './assets/logo.svg';
+import { playStartSound, playStopSound } from './utils/sounds';
 import { OnboardingWizard } from './components/onboarding';
 import { TourGuide } from './components/tour';
 
@@ -48,8 +49,10 @@ function App() {
     listen<string>('recording-status', (event) => {
       if (event.payload === 'recording') {
         setAppStatus('recording');
+        playStartSound();
       } else if (event.payload === 'idle') {
         setAppStatus('idle');
+        playStopSound();
       }
     }).then(unlisten => unlisteners.push(unlisten));
 
