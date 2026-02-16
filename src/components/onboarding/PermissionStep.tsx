@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { AudioDevice } from '../../types';
 import { useSettingsStore } from '../../stores/settingsStore';
+import { AudioWaveform } from '../AudioWaveform';
 
 interface StepProps {
   onValidChange: (valid: boolean) => void;
@@ -13,10 +14,32 @@ export function PermissionStep({ onValidChange }: StepProps) {
   const [status, setStatus] = useState<PermissionStatus>('checking');
   const [devices, setDevices] = useState<AudioDevice[]>([]);
   const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
+  const [previewActive, setPreviewActive] = useState(false);
   const { updateSettings } = useSettingsStore();
+
+  const startPreview = useCallback(async (deviceId: string | null) => {
+    try {
+      await invoke('start_mic_preview', { deviceId });
+      setPreviewActive(true);
+    } catch (e) {
+      console.error('Failed to start mic preview:', e);
+    }
+  }, []);
+
+  const stopPreview = useCallback(async () => {
+    try {
+      await invoke('stop_mic_preview');
+      setPreviewActive(false);
+    } catch (e) {
+      console.error('Failed to stop mic preview:', e);
+    }
+  }, []);
 
   useEffect(() => {
     checkMicrophoneAccess();
+    return () => {
+      invoke('stop_mic_preview').catch(() => {});
+    };
   }, []);
 
   useEffect(() => {
@@ -32,6 +55,7 @@ export function PermissionStep({ onValidChange }: StepProps) {
         const defaultDevice = deviceList.find(d => d.is_default) || deviceList[0];
         setSelectedDevice(defaultDevice.id);
         await updateSettings({ microphone_id: defaultDevice.id });
+        startPreview(defaultDevice.id);
       } else {
         setStatus('denied');
       }
@@ -43,6 +67,8 @@ export function PermissionStep({ onValidChange }: StepProps) {
   const handleDeviceChange = async (deviceId: string) => {
     setSelectedDevice(deviceId);
     await updateSettings({ microphone_id: deviceId });
+    await stopPreview();
+    startPreview(deviceId);
   };
 
   return (
@@ -89,24 +115,35 @@ export function PermissionStep({ onValidChange }: StepProps) {
           <p className="text-[var(--accent-success)] text-[0.85rem] mb-6">
             Microphone accessible
           </p>
-          {devices.length > 1 && (
-            <div className="w-full max-w-sm">
-              <label className="text-[0.8rem] text-[var(--text-muted)] mb-2 block text-left">
-                Choisir un microphone
-              </label>
-              <select
-                value={selectedDevice || ''}
-                onChange={(e) => handleDeviceChange(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-[rgba(255,255,255,0.08)] border border-[var(--glass-border)] text-[var(--text-primary)] text-[0.85rem] focus:outline-none focus:border-[var(--accent-primary)]"
-              >
-                {devices.map(device => (
-                  <option key={device.id} value={device.id}>
-                    {device.name} {device.is_default ? '(Par defaut)' : ''}
-                  </option>
-                ))}
-              </select>
+
+          <div className="w-full max-w-sm mb-6">
+            <label className="text-[0.8rem] text-[var(--text-muted)] mb-2 block text-left">
+              Microphone
+            </label>
+            <select
+              value={selectedDevice || ''}
+              onChange={(e) => handleDeviceChange(e.target.value)}
+              className="w-full px-4 py-2.5 rounded-xl bg-[rgba(255,255,255,0.08)] border border-[var(--glass-border)] text-[var(--text-primary)] text-[0.85rem] focus:outline-none focus:border-[var(--accent-primary)]"
+            >
+              {devices.map(device => (
+                <option key={device.id} value={device.id}>
+                  {device.name} {device.is_default ? '(Par defaut)' : ''}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="w-full max-w-sm">
+            <label className="text-[0.8rem] text-[var(--text-muted)] mb-2 block text-left">
+              Test du microphone
+            </label>
+            <div className="glass-card p-4 flex items-center justify-center">
+              <AudioWaveform active={previewActive} width={280} height={60} />
             </div>
-          )}
+            <p className="text-[0.7rem] text-[var(--text-muted)] mt-2">
+              Parlez pour verifier que le microphone fonctionne
+            </p>
+          </div>
         </>
       )}
 
