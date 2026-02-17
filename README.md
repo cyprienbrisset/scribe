@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="docs/screenshots/main-screen.png" alt="WakaScribe" width="600" />
+  <img src="docs/screenshots/main-screen.png" alt="Phonon" width="600" />
 </p>
 
-<h1 align="center">WakaScribe</h1>
+<h1 align="center">Phonon</h1>
 
 <p align="center">
   <strong>Dictée vocale intelligente, locale et privée</strong>
@@ -28,7 +28,7 @@
 
 ## Présentation
 
-**WakaScribe** est une application de dictée vocale nouvelle génération qui transforme votre voix en texte avec une précision remarquable. Contrairement aux solutions cloud, WakaScribe fonctionne **100% en local** sur votre machine, garantissant une confidentialité totale de vos données.
+**Phonon** est une application de dictée vocale nouvelle génération qui transforme votre voix en texte avec une précision remarquable. Contrairement aux solutions cloud, Phonon fonctionne **100% en local** sur votre machine, garantissant une confidentialité totale de vos données.
 
 ### Points forts
 
@@ -91,7 +91,7 @@ Transcrivez vos fichiers audio existants :
 
 ### Modes de dictée
 
-WakaScribe adapte la transcription selon le contexte :
+Phonon adapte la transcription selon le contexte :
 
 | Mode | Description | Optimisation |
 |------|-------------|--------------|
@@ -272,7 +272,7 @@ Traduisez le texte sélectionné dans n'importe quelle application :
   <img src="docs/screenshots/settings-panel.png" alt="Paramètres - Moteurs" width="400" />
 </p>
 
-WakaScribe propose trois moteurs de transcription :
+Phonon propose trois moteurs de transcription :
 
 ### Whisper (OpenAI)
 
@@ -311,27 +311,27 @@ WakaScribe propose trois moteurs de transcription :
 ### macOS
 
 1. **Téléchargez** le fichier `.dmg` correspondant à votre Mac :
-   - **Mac Intel** : `WakaScribe_x64.dmg`
-   - **Mac M1/M2/M3/M4** : `WakaScribe_arm64.dmg`
+   - **Mac Intel** : `Phonon_x64.dmg`
+   - **Mac M1/M2/M3/M4** : `Phonon_arm64.dmg`
 
 2. **Ouvrez** le fichier `.dmg`
 
-3. **Glissez** WakaScribe dans le dossier Applications
+3. **Glissez** Phonon dans le dossier Applications
 
 4. **Premier lancement** : Clic droit → Ouvrir (contournement Gatekeeper)
 
 5. **Autorisez les permissions** :
    ```
-   Réglages Système → Confidentialité et sécurité → Microphone → ✅ WakaScribe
-   Réglages Système → Confidentialité et sécurité → Accessibilité → ✅ WakaScribe
+   Réglages Système → Confidentialité et sécurité → Microphone → ✅ Phonon
+   Réglages Système → Confidentialité et sécurité → Accessibilité → ✅ Phonon
    ```
 
 ### Windows
 
-1. **Téléchargez** `WakaScribe_Setup.exe`
+1. **Téléchargez** `Phonon_Setup.exe`
 2. **Exécutez** l'installateur
 3. **Suivez** les instructions à l'écran
-4. **Lancez** WakaScribe depuis le menu Démarrer
+4. **Lancez** Phonon depuis le menu Démarrer
 
 ### Linux
 
@@ -355,11 +355,11 @@ WakaScribe propose trois moteurs de transcription :
 3. **Installez** l'application :
    ```bash
    # Debian/Ubuntu
-   sudo dpkg -i wakascribe_*.deb
+   sudo dpkg -i phonon_*.deb
 
    # Ou AppImage
-   chmod +x WakaScribe_*.AppImage
-   ./WakaScribe_*.AppImage
+   chmod +x Phonon_*.AppImage
+   ./Phonon_*.AppImage
    ```
 
 ---
@@ -445,7 +445,7 @@ Accédez aux paramètres via le bouton ⚙️ ou `⌘+,`
 2. Créez un compte gratuit
 3. Allez dans **API Keys**
 4. Cliquez sur **Create API Key**
-5. Copiez la clé et collez-la dans WakaScribe
+5. Copiez la clé et collez-la dans Phonon
 
 ### Dictée
 
@@ -491,7 +491,7 @@ Accédez aux paramètres via le bouton ⚙️ ou `⌘+,`
 
 ### Raccourcis globaux
 
-Ces raccourcis fonctionnent même quand WakaScribe n'est pas au premier plan :
+Ces raccourcis fonctionnent même quand Phonon n'est pas au premier plan :
 
 | Raccourci macOS | Raccourci Windows/Linux | Action |
 |-----------------|------------------------|--------|
@@ -518,9 +518,9 @@ Ces raccourcis fonctionnent même quand WakaScribe n'est pas au premier plan :
 <summary><strong>Le microphone n'est pas détecté</strong></summary>
 
 1. Vérifiez que le microphone est correctement branché
-2. **macOS** : Réglages Système → Confidentialité → Microphone → ✅ WakaScribe
+2. **macOS** : Réglages Système → Confidentialité → Microphone → ✅ Phonon
 3. **Windows** : Paramètres → Confidentialité → Microphone → Autoriser les applications
-4. Redémarrez WakaScribe
+4. Redémarrez Phonon
 </details>
 
 <details>
@@ -529,11 +529,11 @@ Ces raccourcis fonctionnent même quand WakaScribe n'est pas au premier plan :
 **macOS :**
 ```
 Réglages Système → Confidentialité et sécurité → Accessibilité
-→ Activez WakaScribe
+→ Activez Phonon
 ```
 
 **Windows :**
-- Exécutez WakaScribe en tant qu'administrateur (pour certaines applications)
+- Exécutez Phonon en tant qu'administrateur (pour certaines applications)
 
 **Linux :**
 ```bash
@@ -569,9 +569,9 @@ sudo apt install wtype wl-clipboard
 ## FAQ
 
 <details>
-<summary><strong>WakaScribe est-il vraiment gratuit ?</strong></summary>
+<summary><strong>Phonon est-il vraiment gratuit ?</strong></summary>
 
-Oui ! WakaScribe est un freeware 100% gratuit. Pas d'abonnement, pas de limite d'utilisation, pas de publicité.
+Oui ! Phonon est un freeware 100% gratuit. Pas d'abonnement, pas de limite d'utilisation, pas de publicité.
 </details>
 
 <details>
@@ -594,7 +594,7 @@ Oui ! WakaScribe est un freeware 100% gratuit. Pas d'abonnement, pas de limite d
 </details>
 
 <details>
-<summary><strong>Puis-je utiliser WakaScribe hors ligne ?</strong></summary>
+<summary><strong>Puis-je utiliser Phonon hors ligne ?</strong></summary>
 
 **Oui !** Toutes les fonctionnalités principales (transcription, commandes vocales, historique, transcription de fichiers) fonctionnent **sans connexion Internet**.
 
@@ -604,7 +604,7 @@ Seuls le LLM et la traduction nécessitent une connexion.
 <details>
 <summary><strong>Quelles langues sont supportées ?</strong></summary>
 
-Avec Whisper, WakaScribe supporte **99 langues**, dont :
+Avec Whisper, Phonon supporte **99 langues**, dont :
 Français, Anglais, Allemand, Espagnol, Italien, Portugais, Néerlandais, Polonais, Russe, Chinois, Japonais, Coréen, Arabe, Hindi, et bien d'autres.
 </details>
 
@@ -636,7 +636,7 @@ Français, Anglais, Allemand, Espagnol, Italien, Portugais, Néerlandais, Polona
 
 ## Confidentialité & Sécurité
 
-WakaScribe a été conçu avec la vie privée comme priorité absolue :
+Phonon a été conçu avec la vie privée comme priorité absolue :
 
 | Aspect | Garantie |
 |--------|----------|
@@ -663,14 +663,14 @@ UI:       Design Frosted Touch (glassmorphism)
 
 | Canal | Lien |
 |-------|------|
-| Email | support@wakascribe.com |
+| Email | support@phonon.com |
 | Signaler un bug | [GitHub Issues](https://github.com/cyprienbrisset/scribe/issues) |
 
 ---
 
 ## Licence
 
-WakaScribe est un **freeware** distribué gratuitement.
+Phonon est un **freeware** distribué gratuitement.
 
 - Usage personnel et professionnel autorisé
 - Distribution gratuite autorisée

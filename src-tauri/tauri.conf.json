@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Scribe",
+  "productName": "Phonon",
   "version": "1.2.1",
-  "identifier": "com.wakascribe.scribe",
+  "identifier": "com.wakastellar.phonon",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -13,13 +13,13 @@
     "windows": [
       {
         "label": "main",
-        "title": "Scribe",
+        "title": "Phonon",
         "width": 800,
         "height": 750
       },
       {
         "label": "floating",
-        "title": "Scribe",
+        "title": "Phonon",
         "url": "/floating.html",
         "width": 350,
         "height": 80,

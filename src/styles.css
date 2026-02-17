@@ -2,50 +2,50 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  /* Frosted Touch Palette - Soft, ethereal colors */
-  --frost-deep: #0f0f1a;
-  --frost-base: #1a1a2e;
-  --frost-surface: rgba(255, 255, 255, 0.08);
-  --frost-elevated: rgba(255, 255, 255, 0.12);
-  --frost-hover: rgba(255, 255, 255, 0.18);
+  /* Deep void palette */
+  --frost-deep: #060a12;
+  --frost-base: #0a1020;
+  --frost-surface: rgba(0, 229, 255, 0.06);
+  --frost-elevated: rgba(0, 229, 255, 0.1);
+  --frost-hover: rgba(0, 229, 255, 0.15);
 
-  /* Glassmorphism layers - Higher visibility */
-  --glass-bg: rgba(255, 255, 255, 0.08);
-  --glass-border: rgba(255, 255, 255, 0.18);
-  --glass-border-light: rgba(255, 255, 255, 0.28);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  /* Glassmorphism layers */
+  --glass-bg: rgba(10, 18, 35, 0.7);
+  --glass-border: rgba(0, 229, 255, 0.15);
+  --glass-border-light: rgba(0, 229, 255, 0.25);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
   --glass-blur: blur(20px);
   --glass-blur-heavy: blur(40px);
 
-  /* Accent colors - Soft neons */
-  --accent-primary: #7c8aff;
-  --accent-primary-soft: rgba(124, 138, 255, 0.3);
-  --accent-secondary: #ff7eb3;
-  --accent-secondary-soft: rgba(255, 126, 179, 0.3);
-  --accent-success: #7aefb2;
-  --accent-success-soft: rgba(122, 239, 178, 0.3);
-  --accent-warning: #ffd97a;
-  --accent-warning-soft: rgba(255, 217, 122, 0.3);
-  --accent-danger: #ff7a7a;
-  --accent-danger-soft: rgba(255, 122, 122, 0.3);
+  /* Accent colors - Neon cyan / electric blue */
+  --accent-primary: #00e5ff;
+  --accent-primary-soft: rgba(0, 229, 255, 0.3);
+  --accent-secondary: #00b8d4;
+  --accent-secondary-soft: rgba(0, 184, 212, 0.3);
+  --accent-success: #00ff88;
+  --accent-success-soft: rgba(0, 255, 136, 0.3);
+  --accent-warning: #ffb300;
+  --accent-warning-soft: rgba(255, 179, 0, 0.3);
+  --accent-danger: #ff3b3b;
+  --accent-danger-soft: rgba(255, 59, 59, 0.3);
 
   /* Mesh gradient colors */
-  --mesh-1: #667eea;
-  --mesh-2: #764ba2;
-  --mesh-3: #f093fb;
-  --mesh-4: #4facfe;
+  --mesh-1: #00e5ff;
+  --mesh-2: #0066ff;
+  --mesh-3: #00b8d4;
+  --mesh-4: #00ff88;
 
   /* Text - Higher contrast */
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.8);
-  --text-muted: rgba(255, 255, 255, 0.6);
-  --text-subtle: rgba(255, 255, 255, 0.4);
+  --text-primary: #e0f0ff;
+  --text-secondary: rgba(224, 240, 255, 0.8);
+  --text-muted: rgba(224, 240, 255, 0.5);
+  --text-subtle: rgba(224, 240, 255, 0.3);
 
   /* Glow effects */
-  --glow-primary: 0 0 30px rgba(124, 138, 255, 0.4);
-  --glow-secondary: 0 0 30px rgba(255, 126, 179, 0.4);
-  --glow-success: 0 0 30px rgba(122, 239, 178, 0.4);
-  --glow-danger: 0 0 30px rgba(255, 122, 122, 0.4);
+  --glow-primary: 0 0 30px rgba(0, 229, 255, 0.4);
+  --glow-secondary: 0 0 30px rgba(0, 184, 212, 0.4);
+  --glow-success: 0 0 30px rgba(0, 255, 136, 0.4);
+  --glow-danger: 0 0 30px rgba(255, 59, 59, 0.4);
 }
 
 * {
@@ -117,7 +117,7 @@ body {
 
 /* Glass panel base */
 .glass-panel {
-  background: rgba(20, 20, 40, 0.7);
+  background: rgba(8, 14, 28, 0.75);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -143,16 +143,16 @@ body {
 
 /* Glass card - more pronounced effect */
 .glass-card {
-  background: rgba(30, 30, 55, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(10, 18, 35, 0.8);
+  border: 1px solid rgba(0, 229, 255, 0.12);
   border-radius: 16px;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .glass-card:hover {
-  background: rgba(40, 40, 70, 0.85);
-  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(12, 22, 42, 0.85);
+  border-color: rgba(0, 229, 255, 0.2);
   transform: translateY(-2px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
 }
@@ -238,7 +238,7 @@ body {
 }
 
 .btn-glass.active {
-  background: rgba(124, 138, 255, 0.25);
+  background: rgba(0, 229, 255, 0.2);
   border-color: var(--accent-primary);
   color: var(--accent-primary);
 }
@@ -254,12 +254,12 @@ body {
   color: white;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 20px rgba(124, 138, 255, 0.35);
+  box-shadow: 0 4px 20px rgba(0, 229, 255, 0.35);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(124, 138, 255, 0.5);
+  box-shadow: 0 8px 30px rgba(0, 229, 255, 0.5);
 }
 
 .btn-primary:disabled {
@@ -274,7 +274,7 @@ body {
 .input-glass {
   width: 100%;
   padding: 0.875rem 1rem;
-  background: rgba(15, 15, 30, 0.9);
+  background: rgba(6, 10, 18, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
   color: #fff;
@@ -297,7 +297,7 @@ body {
 .select-glass {
   width: 100%;
   padding: 0.875rem 2.5rem 0.875rem 1rem;
-  background: rgba(15, 15, 30, 0.9);
+  background: rgba(6, 10, 18, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
   color: #fff;
@@ -314,11 +314,11 @@ body {
 .select-glass:focus {
   outline: none;
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(124, 138, 255, 0.3);
+  box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.3);
 }
 
 .select-glass option {
-  background: #1a1a2e;
+  background: #0a1020;
   color: #fff;
 }
 
@@ -342,7 +342,7 @@ body {
   width: 22px;
   height: 22px;
   border-radius: 7px;
-  background: rgba(15, 15, 30, 0.9);
+  background: rgba(6, 10, 18, 0.9);
   border: 1.5px solid rgba(255, 255, 255, 0.3);
   position: relative;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -391,7 +391,7 @@ body {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: rgba(15, 15, 30, 0.9);
+  background: rgba(6, 10, 18, 0.9);
   border: 1.5px solid rgba(255, 255, 255, 0.3);
   cursor: pointer;
   transition: all 0.25s ease;
@@ -549,14 +549,14 @@ body {
 }
 
 .record-orb:hover::before {
-  border-color: rgba(124, 138, 255, 0.3);
+  border-color: rgba(0, 229, 255, 0.3);
 }
 
 .record-orb.recording {
   border-color: var(--accent-danger);
   background: linear-gradient(135deg,
-    rgba(255, 122, 122, 0.2) 0%,
-    rgba(255, 122, 122, 0.1) 100%);
+    rgba(255, 59, 59, 0.2) 0%,
+    rgba(255, 59, 59, 0.1) 100%);
   box-shadow:
     0 0 60px var(--accent-danger-soft),
     inset 0 2px 0 rgba(255, 255, 255, 0.1);
@@ -571,8 +571,8 @@ body {
 .record-orb.processing {
   border-color: var(--accent-secondary);
   background: linear-gradient(135deg,
-    rgba(255, 126, 179, 0.15) 0%,
-    rgba(124, 138, 255, 0.15) 100%);
+    rgba(0, 184, 212, 0.15) 0%,
+    rgba(0, 229, 255, 0.15) 100%);
   box-shadow: 0 0 50px var(--accent-secondary-soft);
 }
 
@@ -584,7 +584,7 @@ body {
   }
   50% {
     box-shadow:
-      0 0 80px rgba(255, 122, 122, 0.5),
+      0 0 80px rgba(255, 59, 59, 0.5),
       inset 0 2px 0 rgba(255, 255, 255, 0.15);
   }
 }
@@ -701,27 +701,27 @@ body {
 }
 
 .tag-frost.accent {
-  background: rgba(124, 138, 255, 0.2);
-  border-color: #7c8aff;
-  color: #7c8aff;
+  background: rgba(0, 229, 255, 0.2);
+  border-color: #00e5ff;
+  color: #00e5ff;
 }
 
 .tag-frost.success {
-  background: rgba(122, 239, 178, 0.2);
-  border-color: #7aefb2;
-  color: #7aefb2;
+  background: rgba(0, 255, 136, 0.2);
+  border-color: #00ff88;
+  color: #00ff88;
 }
 
 .tag-frost.warning {
-  background: rgba(255, 217, 122, 0.2);
-  border-color: #ffd97a;
-  color: #ffd97a;
+  background: rgba(255, 179, 0, 0.2);
+  border-color: #ffb300;
+  color: #ffb300;
 }
 
 .tag-frost.danger {
-  background: rgba(255, 122, 122, 0.2);
-  border-color: #ff7a7a;
-  color: #ff7a7a;
+  background: rgba(255, 59, 59, 0.2);
+  border-color: #ff3b3b;
+  color: #ff3b3b;
 }
 
 /* ============================================
@@ -746,10 +746,10 @@ body {
   border-radius: 1px;
 }
 
-.section-title.primary { color: #7c8aff; }
-.section-title.secondary { color: #ff7eb3; }
-.section-title.success { color: #7aefb2; }
-.section-title.warning { color: #ffd97a; }
+.section-title.primary { color: #00e5ff; }
+.section-title.secondary { color: #00b8d4; }
+.section-title.success { color: #00ff88; }
+.section-title.warning { color: #ffb300; }
 
 /* ============================================
    ANIMATIONS
@@ -828,7 +828,7 @@ body {
 
 .settings-panel-frost {
   animation: slideInFromRight 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  background: #14142a !important;
+  background: #060a12 !important;
   position: relative;
   z-index: 1;
 }
@@ -845,17 +845,17 @@ body {
 
 .progress-frost .bar {
   height: 100%;
-  background: linear-gradient(90deg, #7c8aff, #ff7eb3);
+  background: linear-gradient(90deg, #00e5ff, #00b8d4);
   border-radius: 3px;
   transition: width 0.3s ease;
-  box-shadow: 0 0 10px rgba(124, 138, 255, 0.4);
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
 }
 
 /* ============================================
    FLOATING WINDOW - Frosted
    ============================================ */
 .floating-window-frost {
-  background: rgba(30, 30, 50, 0.85);
+  background: rgba(8, 14, 28, 0.9);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--glass-border);
@@ -938,7 +938,7 @@ body {
 .floating-window {
   width: 100%;
   height: 100%;
-  background: rgba(20, 20, 35, 0.95);
+  background: rgba(6, 10, 18, 0.95);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -982,18 +982,18 @@ body {
 
 .status-led.idle {
   background: var(--accent-success);
-  box-shadow: 0 0 12px rgba(122, 239, 178, 0.5);
+  box-shadow: 0 0 12px rgba(0, 255, 136, 0.5);
 }
 
 .status-led.recording {
   background: var(--accent-danger);
-  box-shadow: 0 0 12px rgba(255, 122, 122, 0.6);
+  box-shadow: 0 0 12px rgba(255, 59, 59, 0.6);
   animation: led-pulse-frost 1s ease-in-out infinite;
 }
 
 .status-led.processing {
   background: var(--accent-secondary);
-  box-shadow: 0 0 12px rgba(255, 126, 179, 0.5);
+  box-shadow: 0 0 12px rgba(0, 184, 212, 0.5);
   animation: led-pulse-frost 0.6s ease-in-out infinite;
 }
 
@@ -1066,8 +1066,8 @@ body {
 
 .mode-badge {
   padding: 3px 8px;
-  background: rgba(124, 138, 255, 0.2);
-  border: 1px solid rgba(124, 138, 255, 0.4);
+  background: rgba(0, 229, 255, 0.2);
+  border: 1px solid rgba(0, 229, 255, 0.4);
   border-radius: 10px;
   font-size: 0.65rem;
   font-weight: 600;
@@ -1077,8 +1077,8 @@ body {
 }
 
 .mode-badge.llm {
-  background: rgba(122, 239, 178, 0.2);
-  border-color: rgba(122, 239, 178, 0.4);
+  background: rgba(0, 255, 136, 0.2);
+  border-color: rgba(0, 255, 136, 0.4);
   color: var(--accent-success);
 }
 

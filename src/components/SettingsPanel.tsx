@@ -49,14 +49,12 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
         {/* Header */}
         <div className="flex-shrink-0 px-6 py-5 bg-[rgba(255,255,255,0.08)] border-b border-[rgba(255,255,255,0.1)] flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--accent-primary)] to-[var(--accent-secondary)] flex items-center justify-center shadow-lg p-2">
-              <img src={logoSvg} alt="WakaScribe" className="w-full h-full invert" />
-            </div>
+            <img src={logoSvg} alt="Phonon" className="h-9 object-contain" />
             <div>
               <h2 className="font-display text-lg text-[var(--text-primary)]">
                 Parametres
               </h2>
-              <p className="text-[0.75rem] text-[var(--text-muted)]">Configuration de WakaScribe</p>
+              <p className="text-[0.75rem] text-[var(--text-muted)]">Configuration de Phonon</p>
             </div>
           </div>
           <button
@@ -90,7 +88,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
         {/* Footer */}
         <div className="flex-shrink-0 px-6 py-4 bg-[rgba(255,255,255,0.08)] border-t border-[rgba(255,255,255,0.1)]">
           <p className="text-[0.75rem] text-[var(--text-muted)] text-center">
-            WakaScribe v1.0.0 - {settings.engine_type === 'whisper' ? 'Whisper.cpp' : settings.engine_type === 'vosk' ? 'Vosk' : 'Parakeet'}
+            Phonon v1.0.0 - {settings.engine_type === 'whisper' ? 'Whisper.cpp' : settings.engine_type === 'vosk' ? 'Vosk' : 'Parakeet'}
           </p>
         </div>
       </div>

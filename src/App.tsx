@@ -181,14 +181,11 @@ function App() {
               {/* Logo/Title */}
               <div className="flex items-center gap-3">
                 <div className="relative">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[var(--accent-primary)] to-[var(--accent-secondary)] flex items-center justify-center shadow-lg overflow-visible">
-                    <img src={logoSvg} alt="WakaScribe" className="w-64 h-64 invert" />
-                  </div>
+                  <img src={logoSvg} alt="Phonon" className="h-10 object-contain" />
                 </div>
                 <div>
                   <h1 className="font-display text-lg tracking-tight">
-                    <span className="text-[var(--text-primary)]">Waka</span>
-                    <span className="bg-gradient-to-r from-[var(--accent-primary)] to-[var(--accent-secondary)] bg-clip-text text-transparent">Scribe</span>
+                    <span className="bg-gradient-to-r from-[var(--accent-primary)] to-[var(--accent-secondary)] bg-clip-text text-transparent">Phonon</span>
                   </h1>
                   <p className="text-[0.65rem] text-[var(--text-muted)] tracking-wide">Dictee vocale intelligente</p>
                 </div>
